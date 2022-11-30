@@ -33,6 +33,9 @@ def run(hours, mastodon_token, mastodon_base_url, mastodon_username):
         api_base_url=mastodon_base_url,
     )
 
+    # First, get our filters
+    filters = mst.filters()
+
     start = datetime.now(timezone.utc) - timedelta(hours=hours)
 
     posts = []
@@ -45,7 +48,11 @@ def run(hours, mastodon_token, mastodon_base_url, mastodon_username):
     response = mst.timeline(min_id=start)
 
     while response:  # go until we have no more pagination results
-        for post in response:
+
+        # apply our filters
+        filtered_response = mst.filters_apply(response, filters, 'home')
+
+        for post in filtered_response:
             boost = False
             if post["reblog"] is not None:
                 post = post["reblog"]  # look at the bosted post
