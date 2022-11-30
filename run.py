@@ -40,17 +40,12 @@ def run(hours, mastodon_token, mastodon_base_url, mastodon_username):
 
     print(f"Fetching posts from the past {hours} hours...")
 
-    next_kwargs = {
-        "min_id": start,
-    }
-    max_seen_id = -1
     seen = set({})
 
-    while next_kwargs:  # go until we have no more pagination kwargs
-        response = mst.timeline(**next_kwargs)
+    response = mst.timeline(min_id=start)
 
+    while response:  # go until we have no more pagination results
         for post in response:
-            original_id = post["id"]
             boost = False
             if post["reblog"] is not None:
                 post = post["reblog"]  # look at the bosted post
@@ -85,14 +80,7 @@ def run(hours, mastodon_token, mastodon_base_url, mastodon_username):
                         posts.append(info)
                     seen.add(url)
 
-            # idk why the library's pagination isn't working, do it manually
-            if original_id > max_seen_id:
-                max_seen_id = original_id
-
-        if response:
-            next_kwargs = {"min_id": max_seen_id + 1}
-        else:
-            next_kwargs = None
+        response = mst.fetch_previous(response)  # fext the previous (because of reverse chron) page of results
 
     post_scores = [post["score"] for post in posts]
     boost_scores = [boost["score"] for boost in boosts]
