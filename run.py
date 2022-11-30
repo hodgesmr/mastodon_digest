@@ -79,7 +79,6 @@ def run(hours, mastodon_token, mastodon_base_url, mastodon_username):
                     not info["boosted_by_me"]
                     and not info["favd_by_me"]
                     and info["acct"] != mastodon_username
-                    and info["score"] > 0
                 ):
                     if boost:
                         boosts.append(info)
