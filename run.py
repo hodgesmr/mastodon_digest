@@ -14,7 +14,7 @@ from mastodon import Mastodon
 def calculate_score(post):
 
     # geometric mean of boosts and favs
-    metric_averae = stats.gmean([post["reblogs_count"], post["favourites_count"]])
+    metric_average = stats.gmean([post["reblogs_count"], post["favourites_count"]])
 
     # if they have no followers, I don't want to trust any amount of boosts or favs; zero it out
     if post["account"]["followers_count"] == 0: 
@@ -23,7 +23,7 @@ def calculate_score(post):
         # inversely weight against how big the account is
         weight = 1/sqrt(post["account"]["followers_count"])
 
-    return metric_averae * weight
+    return metric_average * weight
     
 
 def run(hours, mastodon_token, mastodon_base_url, mastodon_username):
