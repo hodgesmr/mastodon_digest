@@ -16,7 +16,7 @@ def calculate_score(post):
     # geometric mean of boosts and favs
     metric_average = stats.gmean([post["reblogs_count"], post["favourites_count"]])
 
-    # if they have no followers, I don't want to trust any amount of boosts or favs; zero it out
+    # Zero out posts by accounts with zero followers that somehow made it to my feed
     if post["account"]["followers_count"] == 0: 
         weight = 0
     else:
