@@ -73,11 +73,13 @@ def run(hours, mastodon_token, mastodon_base_url, mastodon_username):
                     "favs": post["favourites_count"],
                     "boosted_by_me": post["reblogged"],
                     "favd_by_me": post["favourited"],
+                    "bookmarked_by_me": post["bookmerked"],
                     "score": calculate_score(post),
                 }
                 if (
                     not info["boosted_by_me"]
                     and not info["favd_by_me"]
+                    and not info["bookmarked_by_me"]
                     and info["acct"] != mastodon_username
                 ):
                     if boost:
