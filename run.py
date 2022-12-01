@@ -71,6 +71,7 @@ def run(hours, mastodon_token, mastodon_base_url, mastodon_username):
                     "acct_followers": post["account"]["followers_count"],
                     "boosts": post["reblogs_count"],
                     "favs": post["favourites_count"],
+                    "replies": post["replies_count"],
                     "boosted_by_me": post["reblogged"],
                     "favd_by_me": post["favourited"],
                     "bookmarked_by_me": post["bookmerked"],
