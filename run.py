@@ -74,7 +74,7 @@ def run(hours, mastodon_token, mastodon_base_url, mastodon_username):
                     "replies": post["replies_count"],
                     "boosted_by_me": post["reblogged"],
                     "favd_by_me": post["favourited"],
-                    "bookmarked_by_me": post["bookmerked"],
+                    "bookmarked_by_me": post["bookmarked"],
                     "score": calculate_score(post),
                 }
                 if (
