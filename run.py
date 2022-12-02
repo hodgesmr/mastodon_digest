@@ -160,25 +160,23 @@ if __name__ == "__main__":
         """,
     )
     args = arg_parser.parse_args()
-    if not args.hours:
-        arg_parser.print_help()
-    else:
-        mastodon_token = os.getenv("MASTODON_TOKEN")
-        mastodon_base_url = os.getenv("MASTODON_BASE_URL")
-        mastodon_username = os.getenv("MASTODON_USERNAME")
 
-        if not mastodon_token:
-            sys.exit("Missing environment variable: MASTODON_TOKEN")
-        if not mastodon_base_url:
-            sys.exit("Missing environment variable: MASTODON_BASE_URL")
-        if not mastodon_username:
-            sys.exit("Missing environment variable: MASTODON_USERNAME")
+    mastodon_token = os.getenv("MASTODON_TOKEN")
+    mastodon_base_url = os.getenv("MASTODON_BASE_URL")
+    mastodon_username = os.getenv("MASTODON_USERNAME")
 
-        run(
-            args.hours,
-            scorers[args.scorer](),
-            thresholds[args.threshold],
-            mastodon_token,
-            mastodon_base_url,
-            mastodon_username,
-        )
+    if not mastodon_token:
+        sys.exit("Missing environment variable: MASTODON_TOKEN")
+    if not mastodon_base_url:
+        sys.exit("Missing environment variable: MASTODON_BASE_URL")
+    if not mastodon_username:
+        sys.exit("Missing environment variable: MASTODON_USERNAME")
+
+    run(
+        args.hours,
+        scorers[args.scorer](),
+        thresholds[args.threshold],
+        mastodon_token,
+        mastodon_base_url,
+        mastodon_username,
+    )
