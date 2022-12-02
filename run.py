@@ -5,14 +5,16 @@ import tempfile
 import webbrowser
 from datetime import datetime, timedelta, timezone
 
+from mastodon import Mastodon
 from scipy import stats
 
-from mastodon import Mastodon
-
 from models import ScoredPost
+from scorers import SimpleWeightedScorer
 
 
 def run(hours, mastodon_token, mastodon_base_url, mastodon_username):
+
+    scorer = SimpleWeightedScorer()  # TODO - make this a runtime flag
 
     mst = Mastodon(
         access_token=mastodon_token,
@@ -63,9 +65,10 @@ def run(hours, mastodon_token, mastodon_base_url, mastodon_username):
             response
         )  # fext the previous (because of reverse chron) page of results
 
-    post_scores = [scored_post.score for scored_post in scored_posts]
-    boost_scores = [scored_boost.score for scored_boost in scored_boosts]
+    post_scores = [scored_post.get_score(scorer) for scored_post in scored_posts]
+    boost_scores = [scored_boost.get_score(scorer) for scored_boost in scored_boosts]
 
+    # todo - do all this nonsense in Jinja or something better
     html_open = "<!DOCTYPE html>" "<html>"
     head = (
         "<head>"
@@ -92,7 +95,7 @@ def run(hours, mastodon_token, mastodon_base_url, mastodon_username):
     print("Selecting posts...")
     for c in content_collection:
         for post in c[0]:
-            percentile = stats.percentileofscore(c[1], post.score)
+            percentile = stats.percentileofscore(c[1], post.get_score(scorer))
             if percentile > 95:
                 c[2] += (
                     '<div class="post">'
