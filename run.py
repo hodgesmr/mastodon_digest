@@ -10,9 +10,10 @@ from scipy import stats
 
 from models import ScoredPost
 from scorers import get_scorers
+from thresholds import get_thresholds
 
 
-def run(hours, scorer, mastodon_token, mastodon_base_url, mastodon_username):
+def run(hours, scorer, threshold, mastodon_token, mastodon_base_url, mastodon_username):
 
     scorer = scorer()
 
@@ -96,7 +97,7 @@ def run(hours, scorer, mastodon_token, mastodon_base_url, mastodon_username):
     for c in content_collection:
         for post in c[0]:
             percentile = stats.percentileofscore(c[1], post.get_score(scorer))
-            if percentile > 95:
+            if percentile > threshold:
                 c[2] += (
                     '<div class="post">'
                     f'<a style="color:white;" href=\'{post.get_home_url(mastodon_base_url)}\' target="_blank">Home Link</a>'
@@ -135,6 +136,8 @@ def run(hours, scorer, mastodon_token, mastodon_base_url, mastodon_username):
 
 if __name__ == "__main__":
     scorers = get_scorers()
+    thresholds = get_thresholds()
+
     arg_parser = argparse.ArgumentParser(prog="mastodon_digest")
     arg_parser.add_argument(
         "-n",
@@ -147,9 +150,16 @@ if __name__ == "__main__":
     arg_parser.add_argument(
         "-s",
         choices=list(scorers.keys()),
-        default='SimpleWeighted',
+        default="SimpleWeighted",
         dest="scorer",
         help="Which post scoring criteria to use. SimpleWeighted is the default.",
+    )
+    arg_parser.add_argument(
+        "-t",
+        choices=list(thresholds.keys()),
+        default="normal",
+        dest="threshold",
+        help="Which post threshold criteria to use. Normal is the default. lax = 90th percentile, normal = 95th percentil, strict = 98th percentil.",
     )
     args = arg_parser.parse_args()
     if not args.hours:
@@ -169,6 +179,7 @@ if __name__ == "__main__":
         run(
             args.hours,
             scorers[args.scorer],
+            thresholds[args.threshold],
             mastodon_token,
             mastodon_base_url,
             mastodon_username,
