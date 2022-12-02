@@ -148,7 +148,7 @@ if __name__ == "__main__":
         "-s",
         dest="scorer",
         choices=list(scorers.keys()),
-        help="Which post scoring criteria to use. TODO: describe them here!",
+        help="Which post scoring criteria to use. SimpleWeighted is the default.",
     )
     args = arg_parser.parse_args()
     if not args.hours:
