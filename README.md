@@ -19,6 +19,12 @@ Before you can run the tool locally, you need to copy [.env.example](./.env.exam
  - `MASTODON_BASE_URL` : This is the protocol-aware URL of your Mastodon home instance. For example, if you are `@Gargron@mastodon.social`, then you would set `https://mastodon.social`.
  - `MASTODON_USERNAME`: This is your Mastodon account username on your home instance. For example, if you are `@Gargron@mastodon.social`, then you would set `Gargron`.
 
+ Then:
+
+ ```sh
+ source .env
+ ```
+
 ### Usage
 
 You can immediately generate and launch a Mastodon Digest in your local browser with:
