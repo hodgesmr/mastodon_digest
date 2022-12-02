@@ -63,6 +63,14 @@ options:
   - `normal` : Posts must achieve a score within the 95th percentile. This is the default threshold
   - `strict` : Posts must achive a score within the 98th percentile.
 
+## What's missing?
+
+Probably many things!
+
+You likely noticed that this repository has no tests. That's because I'm still treating this as a toy and not work. But tests might be good!
+
+I'm still thinking about the best structure / process / whatever to incorporate new interesting algorithms. Maybe I'll devote time to that, maybe not, but you can always fork.
+
 ## A Matt Hodges project
 
 This project is maintained by [@MattHodges](https://mastodon.social/@MattHodges).
