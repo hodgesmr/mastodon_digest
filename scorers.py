@@ -43,7 +43,7 @@ class Scorer(ABC):
         pass
 
 
-class SimpleScorer(Scorer, UniformWeight):
+class SimpleScorer(UniformWeight, Scorer):
     @classmethod
     def score(cls, scored_post: ScoredPost):
         metric_average = stats.gmean(
@@ -55,13 +55,13 @@ class SimpleScorer(Scorer, UniformWeight):
         return metric_average * super().weight(scored_post)
 
 
-class SimpleWeightedScorer(SimpleScorer, InverseFollowerWeight):
+class SimpleWeightedScorer(InverseFollowerWeight, SimpleScorer):
     @classmethod
     def score(cls, scored_post: ScoredPost):
         return super().score(scored_post) * super().weight(scored_post)
 
 
-class ExtendedSimpleScorer(Scorer, UniformWeight):
+class ExtendedSimpleScorer(UniformWeight, Scorer):
     @classmethod
     def score(cls, scored_post: ScoredPost):
         metric_average = stats.gmean(
@@ -74,7 +74,7 @@ class ExtendedSimpleScorer(Scorer, UniformWeight):
         return metric_average * super().weight(scored_post)
 
 
-class ExtendedSimpleWeightedScorer(ExtendedSimpleScorer, InverseFollowerWeight):
+class ExtendedSimpleWeightedScorer(InverseFollowerWeight, ExtendedSimpleScorer):
     @classmethod
     def score(cls, scored_post: ScoredPost):
         return super().score(scored_post) * super().weight(scored_post)
