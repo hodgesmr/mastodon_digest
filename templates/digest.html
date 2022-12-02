@@ -1,0 +1,24 @@
+{# templates/digest.html #}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://static-cdn.mastodon.social/embed.js" async="async"></script>
+</head>
+<body bgcolor="#292c36" style="font-family: Arial, sans-serif;">
+    <div id="container" style="margin: auto; max-width: 640px; padding: 10px; text-align: center;">
+        <h1 style="color:white;">Mastodon Digest</h1>
+        <h3 style="color:#D3D3D3;"><i>Sourced from your timeline over the past {{ hours }} hours</i></h3>
+        <h2 style="color:white;">Here are some popular posts you may have missed:</h2>
+        {% with posts=posts %}
+            {% include "posts.html" %}
+        {% endwith %}
+        <h2 style="color:white;">Here are some popular boosts you may have missed:</h2>
+        {% with posts=boosts %}
+            {% include "posts.html" %}
+        {% endwith %}
+    </div>
+</body>
+
+</html>

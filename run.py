@@ -5,6 +5,7 @@ import tempfile
 import webbrowser
 from datetime import datetime, timedelta, timezone
 
+from jinja2 import Environment, FileSystemLoader
 from mastodon import Mastodon
 from scipy import stats
 
@@ -69,6 +70,18 @@ def fetch_posts_and_boosts(
     return posts, boosts
 
 
+def render_and_open_digest(context: dict) -> None:
+    environment = Environment(loader=FileSystemLoader("templates/"))
+    template = environment.get_template("digest.html")
+    output_html = template.render(context)
+
+    with tempfile.NamedTemporaryFile("w", delete=False, suffix=".html") as out_file:
+        final_url = f"file://{out_file.name}"
+        out_file.write(output_html)
+
+    webbrowser.open(final_url)
+
+
 def run(
     hours: int,
     scorer: Scorer,
@@ -99,65 +112,13 @@ def run(
         if stats.percentileofscore(all_boost_scores, p.get_score(scorer)) > threshold
     ]
 
-    # todo - do all this nonsense in Jinja or something better
-    html_open = "<!DOCTYPE html>" "<html>"
-    head = (
-        "<head>"
-        '<script src="https://static-cdn.mastodon.social/embed.js" async="async"></script>'
-        "</head>"
-    )
-    body_open = '<body bgcolor="#292c36" style="font-family: Arial, sans-serif;">'
-    container_open = '<div id="container" style="margin: auto; max-width: 640px; padding: 10px; text-align: center;">'
-    title = '<h1 style="color:white;">Mastodon Digest</h1>'
-    subtitle = f'<h3 style="color:#D3D3D3;"><i>Sourced from your timeline over the past {hours} hours</i></h2>'
-    posts_header = (
-        '<h2 style="color:white;">Here are some popular posts you may have missed:</h2>'
-    )
-    boosts_header = '<h2 style="color:white;">Here are some popular boosts you may have missed:</h2>'
-    container_close = "</div>"
-    body_close = "</body>"
-    html_close = "</html>"
+    digest_context = {
+        "hours": hours,
+        "posts": threshold_posts,
+        "boosts": threshold_boosts,
+    }
 
-    content_collection = [
-        [threshold_posts, ""],
-        [threshold_boosts, ""],
-    ]
-
-    # print("Selecting posts...")
-    for content in content_collection:
-        for post in content[0]:
-            content[1] += (
-                '<div class="post">'
-                f'<a style="color:white;" href=\'{post.get_home_url(mastodon_base_url)}\' target="_blank">Home Link</a>'
-                '<span style="color:white;"> | </span>'
-                f'<a style="color:white;" href=\'{post.url}\' target="_blank">Original Link</a>'
-                "<br />"
-                f'<iframe src=\'{post.url}/embed\' class="mastodon-embed" style="max-width: 100%; border: 0" width="400" allowfullscreen="allowfullscreen"></iframe>'
-                "<br /><br />"
-                "</div>"
-            )
-
-    output_html = (
-        f"{html_open}"
-        f"{head}"
-        f"{body_open}"
-        f"{container_open}"
-        f"{title}"
-        f"{subtitle}"
-        f"{posts_header}"
-        f"{content_collection[0][1]}"  # posts
-        f"{boosts_header}"
-        f"{content_collection[1][1]}"  # boosts
-        f"{container_close}"
-        f"{body_close}"
-        f"{html_close}"
-    )
-
-    with tempfile.NamedTemporaryFile("w", delete=False, suffix=".html") as out_file:
-        final_url = f"file://{out_file.name}"
-        out_file.write(output_html)
-
-    webbrowser.open(final_url)
+    render_and_open_digest(digest_context)
 
 
 if __name__ == "__main__":
