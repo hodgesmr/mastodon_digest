@@ -9,12 +9,12 @@ from mastodon import Mastodon
 from scipy import stats
 
 from models import ScoredPost
-from scorers import SimpleWeightedScorer
+from scorers import get_scorers
 
 
-def run(hours, mastodon_token, mastodon_base_url, mastodon_username):
+def run(hours, scorer, mastodon_token, mastodon_base_url, mastodon_username):
 
-    scorer = SimpleWeightedScorer()  # TODO - make this a runtime flag
+    scorer = scorer()
 
     mst = Mastodon(
         access_token=mastodon_token,
@@ -134,13 +134,21 @@ def run(hours, mastodon_token, mastodon_base_url, mastodon_username):
 
 
 if __name__ == "__main__":
+    scorers = get_scorers()
     arg_parser = argparse.ArgumentParser(prog="mastodon_digest")
     arg_parser.add_argument(
-        "hours",
+        "-n",
+        dest="hours",
         type=int,
         choices=range(1, 25),
         help="The number of hours to include in the Mastodon Digest",
         default=12,
+    )
+    arg_parser.add_argument(
+        "-s",
+        dest="scorer",
+        choices=list(scorers.keys()),
+        help="Which post scoring criteria to use. TODO: describe them here!",
     )
     args = arg_parser.parse_args()
     if not args.hours:
@@ -157,4 +165,10 @@ if __name__ == "__main__":
         if not mastodon_username:
             sys.exit("Missing environment variable: MASTODON_USERNAME")
 
-        run(args.hours, mastodon_token, mastodon_base_url, mastodon_username)
+        run(
+            args.hours,
+            scorers[args.scorer],
+            mastodon_token,
+            mastodon_base_url,
+            mastodon_username,
+        )

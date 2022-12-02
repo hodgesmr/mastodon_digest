@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import importlib
+import inspect
 from abc import ABC, abstractmethod
 from math import sqrt
 from typing import TYPE_CHECKING
@@ -78,3 +80,9 @@ class ExtendedSimpleWeightedScorer(InverseFollowerWeight, ExtendedSimpleScorer):
     @classmethod
     def score(cls, scored_post: ScoredPost):
         return super().score(scored_post) * super().weight(scored_post)
+
+
+def get_scorers():
+    all_classes = inspect.getmembers(importlib.import_module(__name__), inspect.isclass)
+    scorers = [c for c in all_classes if c[1] != Scorer and issubclass(c[1], Scorer)]
+    return {scorer[0].replace("Scorer", ""): scorer[1] for scorer in scorers}
