@@ -48,12 +48,20 @@ class Scorer(ABC):
 class SimpleScorer(UniformWeight, Scorer):
     @classmethod
     def score(cls, scored_post: ScoredPost) -> SimpleScorer:
-        metric_average = stats.gmean(
-            [
-                scored_post.info["reblogs_count"],
-                scored_post.info["favourites_count"],
-            ]
-        )
+        if scored_post.info["reblogs_count"] or scored_post.info["favourites_count"]:
+            # If there's at least one metric
+            # We don't want zeros in other metrics to multiply that out
+            # Inflate every value by 1
+            metric_average = stats.gmean(
+                # We don't want zeros to multiply out posts with values in the other metric
+                # Inflate every value by 1
+                [
+                    scored_post.info["reblogs_count"]+1,
+                    scored_post.info["favourites_count"]+1,
+                ]
+            )
+        else:
+            metric_average = 0
         return metric_average * super().weight(scored_post)
 
 
@@ -66,13 +74,19 @@ class SimpleWeightedScorer(InverseFollowerWeight, SimpleScorer):
 class ExtendedSimpleScorer(UniformWeight, Scorer):
     @classmethod
     def score(cls, scored_post: ScoredPost) -> ExtendedSimpleScorer:
-        metric_average = stats.gmean(
-            [
-                scored_post.info["reblogs_count"],
-                scored_post.info["favourites_count"],
-                scored_post.info["replies_count"],
-            ],
-        )
+        if scored_post.info["reblogs_count"] or scored_post.info["favourites_count"] or scored_post.info["replies_count"]:
+            # If there's at least one metric
+            # We don't want zeros in other metrics to multiply that out
+            # Inflate every value by 1
+            metric_average = stats.gmean(
+                [
+                    scored_post.info["reblogs_count"]+1,
+                    scored_post.info["favourites_count"]+1,
+                    scored_post.info["replies_count"]+1,
+                ],
+            )
+        else:
+            metric_average = 0
         return metric_average * super().weight(scored_post)
 
 
