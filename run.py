@@ -140,6 +140,7 @@ if __name__ == "__main__":
         type=int,
         choices=range(1, 25),
         help="The number of hours to include in the Mastodon Digest",
+        default=12,
     )
     args = arg_parser.parse_args()
     if not args.hours:
