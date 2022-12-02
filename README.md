@@ -1,6 +1,8 @@
 # Mastodon Digest
 
-TODO - description
+TODO : image
+
+This is a Python project that generates a digest of popular Mastodon posts from your home timeline. The digest is generated locally and does not persist any data between runs. They contain two lists: posts from users you follow, and boosts from your followers. Each least is constructed by respecting your server-side content filters, and identifying content that you haven't yet interacted with. Digests are automatically opened locally in your web browser. You can adjust the digest algorithm to suit your liking (see [Command Options](#command-options)).
 
 ## Local Configuration
 
@@ -65,4 +67,4 @@ options:
 
 This project is maintained by [@MattHodges](https://mastodon.social/@MattHodges).
 
-_Please use it for good, not evil._git
+_Please use it for good, not evil._
