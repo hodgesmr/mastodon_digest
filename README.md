@@ -1,6 +1,6 @@
 # Mastodon Digest
 
-TODO : image
+![Mastodon Digest](https://i.imgur.com/ZRE9BKc.png)
 
 This is a Python project that generates a digest of popular Mastodon posts from your home timeline. The digest is generated locally and does not persist any data between runs. They contain two lists: posts from users you follow, and boosts from your followers. Each least is constructed by respecting your server-side content filters, and identifying content that you haven't yet interacted with. Digests are automatically opened locally in your web browser. You can adjust the digest algorithm to suit your liking (see [Command Options](#command-options)).
 
@@ -16,8 +16,8 @@ pip isntall -r requirements.txt
 
 Before you can run the tool locally, you need to copy [.env.example](./.env.example) to [.env](./.env) (which is ignored by git) and fill in the relevant environment variables:
  - `MASTODON_TOKEN` : This is your access token. You can generate on on your home instance under Preferences > Development.
- - `MASTODON_BASE_URL` : This is the protocol-aware URL of your Mastodon home instance. For example, if you are @Gargron@mastodon.social, then you would set "https://mastodon.social".
- - `MASTODON_USERNAME`: This is your Mastodon account username on your home instance. For example, if you are @Gargron@mastodon.social, then you would set "Gargron".
+ - `MASTODON_BASE_URL` : This is the protocol-aware URL of your Mastodon home instance. For example, if you are `@Gargron@mastodon.social`, then you would set `https://mastodon.social`.
+ - `MASTODON_USERNAME`: This is your Mastodon account username on your home instance. For example, if you are `@Gargron@mastodon.social`, then you would set `Gargron`.
 
 ### Usage
 
