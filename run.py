@@ -11,7 +11,7 @@ from scipy import stats
 
 from models import ScoredPost
 from scorers import Scorer, get_scorers
-from thresholds import get_thresholds
+from thresholds import Threshold, get_thresholds, get_threshold_from_name
 
 
 def fetch_posts_and_boosts(
@@ -85,7 +85,7 @@ def render_and_open_digest(context: dict) -> None:
 def run(
     hours: int,
     scorer: Scorer,
-    threshold: int,
+    threshold: Threshold,
     mastodon_token: str,
     mastodon_base_url: str,
     mastodon_username: str,
@@ -99,18 +99,10 @@ def run(
     )
 
     posts, boosts = fetch_posts_and_boosts(hours, mst, mastodon_username)
-    all_post_scores = [p.get_score(scorer) for p in posts]
-    all_boost_scores = [b.get_score(scorer) for b in boosts]
-    threshold_posts = [
-        p
-        for p in posts
-        if stats.percentileofscore(all_post_scores, p.get_score(scorer)) > threshold
-    ]
-    threshold_boosts = [
-        p
-        for p in boosts
-        if stats.percentileofscore(all_boost_scores, p.get_score(scorer)) > threshold
-    ]
+
+    threshold_posts = threshold.posts_meeting_criteria(posts, scorer)
+    threshold_boosts = threshold.posts_meeting_criteria(boosts, scorer)
+
 
     digest_context = {
         "hours": hours,
@@ -176,7 +168,7 @@ if __name__ == "__main__":
     run(
         args.hours,
         scorers[args.scorer](),
-        thresholds[args.threshold],
+        get_threshold_from_name(args.threshold),
         mastodon_token,
         mastodon_base_url,
         mastodon_username,
