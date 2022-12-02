@@ -4,27 +4,13 @@ import sys
 import tempfile
 import webbrowser
 from datetime import datetime, timedelta, timezone
-from math import sqrt
 
 from scipy import stats
 
 from mastodon import Mastodon
 
+from models import ScoredPost
 
-def calculate_score(post):
-
-    # geometric mean of boosts and favs
-    metric_average = stats.gmean([post["reblogs_count"], post["favourites_count"]])
-
-    # Zero out posts by accounts with zero followers that somehow made it to my feed
-    if post["account"]["followers_count"] == 0: 
-        weight = 0
-    else:
-        # inversely weight against how big the account is
-        weight = 1/sqrt(post["account"]["followers_count"])
-
-    return metric_average * weight
-    
 
 def run(hours, mastodon_token, mastodon_base_url, mastodon_username):
 
@@ -38,8 +24,8 @@ def run(hours, mastodon_token, mastodon_base_url, mastodon_username):
 
     start = datetime.now(timezone.utc) - timedelta(hours=hours)
 
-    posts = []
-    boosts = []
+    scored_posts = []
+    scored_boosts = []
 
     print(f"Fetching posts from the past {hours} hours...")
 
@@ -50,7 +36,7 @@ def run(hours, mastodon_token, mastodon_base_url, mastodon_username):
     while response:  # go until we have no more pagination results
 
         # apply our filters
-        filtered_response = mst.filters_apply(response, filters, 'home')
+        filtered_response = mst.filters_apply(response, filters, "home")
 
         for post in filtered_response:
             boost = False
@@ -58,41 +44,27 @@ def run(hours, mastodon_token, mastodon_base_url, mastodon_username):
                 post = post["reblog"]  # look at the bosted post
                 boost = True
 
-            url = post["url"]
+            scored_post = ScoredPost(post)
 
-            if url not in seen:
-                info = {
-                    "url": url,
-                    "redirect_url": f"{mastodon_base_url}/authorize_interaction?uri={url}",
-                    "created": post["created_at"],
-                    "content": post["content"],
-                    "username": post["account"]["username"],
-                    "acct": post["account"]["acct"],
-                    "acct_followers": post["account"]["followers_count"],
-                    "boosts": post["reblogs_count"],
-                    "favs": post["favourites_count"],
-                    "replies": post["replies_count"],
-                    "boosted_by_me": post["reblogged"],
-                    "favd_by_me": post["favourited"],
-                    "bookmarked_by_me": post["bookmarked"],
-                    "score": calculate_score(post),
-                }
+            if scored_post.url not in seen:
                 if (
-                    not info["boosted_by_me"]
-                    and not info["favd_by_me"]
-                    and not info["bookmarked_by_me"]
-                    and info["acct"] != mastodon_username
+                    not scored_post.info["reblogged"]
+                    and not scored_post.info["favourited"]
+                    and not scored_post.info["bookmarked"]
+                    and scored_post.info["account"]["acct"] != mastodon_username
                 ):
                     if boost:
-                        boosts.append(info)
+                        scored_boosts.append(scored_post)
                     else:
-                        posts.append(info)
-                    seen.add(url)
+                        scored_posts.append(scored_post)
+                    seen.add(scored_post.url)
 
-        response = mst.fetch_previous(response)  # fext the previous (because of reverse chron) page of results
+        response = mst.fetch_previous(
+            response
+        )  # fext the previous (because of reverse chron) page of results
 
-    post_scores = [post["score"] for post in posts]
-    boost_scores = [boost["score"] for boost in boosts]
+    post_scores = [scored_post.score for scored_post in scored_posts]
+    boost_scores = [scored_boost.score for scored_boost in scored_boosts]
 
     html_open = "<!DOCTYPE html>" "<html>"
     head = (
@@ -104,29 +76,31 @@ def run(hours, mastodon_token, mastodon_base_url, mastodon_username):
     container_open = '<div id="container" style="margin: auto; max-width: 640px; padding: 10px; text-align: center;">'
     title = '<h1 style="color:white;">Mastodon Digest</h1>'
     subtitle = f'<h3 style="color:#D3D3D3;"><i>Sourced from your timeline over the past {hours} hours</i></h2>'
-    posts_header = '<h2 style="color:white;">Here are some popular posts you may have missed:</h2>'
+    posts_header = (
+        '<h2 style="color:white;">Here are some popular posts you may have missed:</h2>'
+    )
     boosts_header = '<h2 style="color:white;">Here are some popular boosts you may have missed:</h2>'
     container_close = "</div>"
     body_close = "</body>"
     html_close = "</html>"
 
     content_collection = [
-        [posts, post_scores, ""],
-        [boosts, boost_scores, ""],
+        [scored_posts, post_scores, ""],
+        [scored_boosts, boost_scores, ""],
     ]
 
     print("Selecting posts...")
     for c in content_collection:
         for post in c[0]:
-            percentile = stats.percentileofscore(c[1], post["score"])
+            percentile = stats.percentileofscore(c[1], post.score)
             if percentile > 95:
                 c[2] += (
                     '<div class="post">'
-                    f'<a style="color:white;" href=\'{post["redirect_url"]}\' target="_blank">Home Link</a>'
+                    f'<a style="color:white;" href=\'{post.get_home_url(mastodon_base_url)}\' target="_blank">Home Link</a>'
                     '<span style="color:white;"> | </span>'
-                    f'<a style="color:white;" href=\'{post["url"]}\' target="_blank">Original Link</a>'
+                    f'<a style="color:white;" href=\'{post.url}\' target="_blank">Original Link</a>'
                     "<br />"
-                    f'<iframe src=\'{post["url"]}/embed\' class="mastodon-embed" style="max-width: 100%; border: 0" width="400" allowfullscreen="allowfullscreen"></iframe>'
+                    f'<iframe src=\'{post.url}/embed\' class="mastodon-embed" style="max-width: 100%; border: 0" width="400" allowfullscreen="allowfullscreen"></iframe>'
                     "<br /><br />"
                     "</div>"
                 )
@@ -156,22 +130,27 @@ def run(hours, mastodon_token, mastodon_base_url, mastodon_username):
     webbrowser.open(final_url)
 
 
-if __name__ == '__main__':
-    arg_parser = argparse.ArgumentParser(prog='mastodon_digest')
-    arg_parser.add_argument('hours', type=int, choices=range(1, 25), help="The number of hours to include in the Mastodon Digest")
+if __name__ == "__main__":
+    arg_parser = argparse.ArgumentParser(prog="mastodon_digest")
+    arg_parser.add_argument(
+        "hours",
+        type=int,
+        choices=range(1, 25),
+        help="The number of hours to include in the Mastodon Digest",
+    )
     args = arg_parser.parse_args()
     if not args.hours:
         arg_parser.print_help()
     else:
-        mastodon_token = os.getenv('MASTODON_TOKEN')
-        mastodon_base_url = os.getenv('MASTODON_BASE_URL')
-        mastodon_username = os.getenv('MASTODON_USERNAME')
+        mastodon_token = os.getenv("MASTODON_TOKEN")
+        mastodon_base_url = os.getenv("MASTODON_BASE_URL")
+        mastodon_username = os.getenv("MASTODON_USERNAME")
 
         if not mastodon_token:
-            sys.exit('Missing environment variable: MASTODON_TOKEN')
+            sys.exit("Missing environment variable: MASTODON_TOKEN")
         if not mastodon_base_url:
-            sys.exit('Missing environment variable: MASTODON_BASE_URL')
+            sys.exit("Missing environment variable: MASTODON_BASE_URL")
         if not mastodon_username:
-            sys.exit('Missing environment variable: MASTODON_USERNAME')
-        
+            sys.exit("Missing environment variable: MASTODON_USERNAME")
+
         run(args.hours, mastodon_token, mastodon_base_url, mastodon_username)
