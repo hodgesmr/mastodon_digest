@@ -152,14 +152,25 @@ if __name__ == "__main__":
         choices=list(scorers.keys()),
         default="SimpleWeighted",
         dest="scorer",
-        help="Which post scoring criteria to use. SimpleWeighted is the default.",
+        help="""Which post scoring criteria to use. 
+            SimpleWeighted is the default. 
+            Simple scorers take a geometric mean of boosts and favs. 
+            Extended scorers include reply counts in the geometric mean. 
+            Weighted scorers multiply the score by an inverse sqaure root 
+            of the author's followers, to reduce the influence of large accounts.
+        """
     )
     arg_parser.add_argument(
         "-t",
         choices=list(thresholds.keys()),
         default="normal",
         dest="threshold",
-        help="Which post threshold criteria to use. Normal is the default. lax = 90th percentile, normal = 95th percentil, strict = 98th percentil.",
+        help="""Which post threshold criteria to use. 
+            Normal is the default.
+            lax = 90th percentile
+            normal = 95th percentile
+            strict = 98th percentile
+        """
     )
     args = arg_parser.parse_args()
     if not args.hours:
