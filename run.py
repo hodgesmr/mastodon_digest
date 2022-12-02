@@ -116,6 +116,7 @@ def run(
         "hours": hours,
         "posts": threshold_posts,
         "boosts": threshold_boosts,
+        "mastodon_base_url": mastodon_base_url,
     }
 
     render_and_open_digest(digest_context)
