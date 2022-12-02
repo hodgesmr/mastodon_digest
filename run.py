@@ -72,7 +72,7 @@ def fetch_posts_and_boosts(
 
 def render_and_open_digest(context: dict) -> None:
     environment = Environment(loader=FileSystemLoader("templates/"))
-    template = environment.get_template("digest.html")
+    template = environment.get_template("digest.html.jinja")
     output_html = template.render(context)
 
     with tempfile.NamedTemporaryFile("w", delete=False, suffix=".html") as out_file:

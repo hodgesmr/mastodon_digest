@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include "style.html.jinja" %}
+    <script src="https://static-cdn.mastodon.social/embed.js" async="async"></script>
+</head>
+<body>
+    <div id="container">
+        <h1>Mastodon Digest</h1>
+        <h3><i>Sourced from your timeline over the past {{ hours }} hours</i></h3>
+        <h2>Here are some popular posts you may have missed:</h2>
+        {% with posts=posts %}
+            {% include "posts.html.jinja" %}
+        {% endwith %}
+        <h2>Here are some popular boosts you may have missed:</h2>
+        {% with posts=boosts %}
+            {% include "posts.html.jinja" %}
+        {% endwith %}
+    </div>
+</body>
+</html>

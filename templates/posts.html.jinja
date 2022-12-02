@@ -1,0 +1,9 @@
+{% for post in posts %}
+<div class="post">
+    <a class="home-link" href="{{ post.get_home_url(mastodon_base_url) }}" target="_blank">Home Link</a>
+    <span class="link-divider"> | </span>
+    <a class="original-link" href="{{ post.url }}" target="_blank">Original Link</a>
+    <br />
+    <iframe src="{{ post.url }}/embed" class="mastodon-embed" allowfullscreen="allowfullscreen" width="400"></iframe>
+</div>
+{% endfor %}
