@@ -21,13 +21,13 @@ class Weight(ABC):
 
 class UniformWeight(Weight):
     @classmethod
-    def weight(cls, scored_post: ScoredPost):
+    def weight(cls, scored_post: ScoredPost) -> UniformWeight:
         return 1
 
 
 class InverseFollowerWeight(Weight):
     @classmethod
-    def weight(cls, scored_post: ScoredPost):
+    def weight(cls, scored_post: ScoredPost) -> InverseFollowerWeight:
         # Zero out posts by accounts with zero followers that somehow made it to my feed
         if scored_post.info["account"]["followers_count"] == 0:
             weight = 0
@@ -47,7 +47,7 @@ class Scorer(ABC):
 
 class SimpleScorer(UniformWeight, Scorer):
     @classmethod
-    def score(cls, scored_post: ScoredPost):
+    def score(cls, scored_post: ScoredPost) -> SimpleScorer:
         metric_average = stats.gmean(
             [
                 scored_post.info["reblogs_count"],
@@ -59,13 +59,13 @@ class SimpleScorer(UniformWeight, Scorer):
 
 class SimpleWeightedScorer(InverseFollowerWeight, SimpleScorer):
     @classmethod
-    def score(cls, scored_post: ScoredPost):
+    def score(cls, scored_post: ScoredPost) -> SimpleWeightedScorer:
         return super().score(scored_post) * super().weight(scored_post)
 
 
 class ExtendedSimpleScorer(UniformWeight, Scorer):
     @classmethod
-    def score(cls, scored_post: ScoredPost):
+    def score(cls, scored_post: ScoredPost) -> ExtendedSimpleScorer:
         metric_average = stats.gmean(
             [
                 scored_post.info["reblogs_count"],
@@ -78,7 +78,7 @@ class ExtendedSimpleScorer(UniformWeight, Scorer):
 
 class ExtendedSimpleWeightedScorer(InverseFollowerWeight, ExtendedSimpleScorer):
     @classmethod
-    def score(cls, scored_post: ScoredPost):
+    def score(cls, scored_post: ScoredPost) -> ExtendedSimpleWeightedScorer:
         return super().score(scored_post) * super().weight(scored_post)
 
 

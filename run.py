@@ -138,16 +138,17 @@ if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser(prog="mastodon_digest")
     arg_parser.add_argument(
         "-n",
-        dest="hours",
-        type=int,
         choices=range(1, 25),
-        help="The number of hours to include in the Mastodon Digest",
         default=12,
+        dest="hours",
+        help="The number of hours to include in the Mastodon Digest",
+        type=int,
     )
     arg_parser.add_argument(
         "-s",
-        dest="scorer",
         choices=list(scorers.keys()),
+        default='SimpleWeighted',
+        dest="scorer",
         help="Which post scoring criteria to use. SimpleWeighted is the default.",
     )
     args = arg_parser.parse_args()
