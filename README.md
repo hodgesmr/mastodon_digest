@@ -9,7 +9,7 @@ This is a Python project that generates a digest of popular Mastodon posts from 
 From within your Python3 environment, simply:
 
 ```sh
-pip isntall -r requirements.txt
+pip install -r requirements.txt
 ```
 
 ### Set up the environment
