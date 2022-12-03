@@ -6,6 +6,7 @@ import sys
 import tempfile
 import webbrowser
 from typing import TYPE_CHECKING
+from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
 from mastodon import Mastodon
@@ -24,11 +25,8 @@ def render_and_open_digest(context: dict) -> None:
     template = environment.get_template("digest.html.jinja")
     output_html = template.render(context)
 
-    with tempfile.NamedTemporaryFile("w", delete=False, suffix=".html") as out_file:
-        final_url = f"file://{out_file.name}"
-        out_file.write(output_html)
+    Path("digest.html").write_text(output_html)
 
-    webbrowser.open(final_url)
 
 
 def run(

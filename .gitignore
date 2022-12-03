@@ -42,3 +42,4 @@ package-lock.json
 .vscode*
 
 .env
+digest.html
