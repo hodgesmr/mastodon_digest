@@ -79,6 +79,8 @@ options:
   - `normal` : Posts must achieve a score within the 95th percentile. **This is the default threshold**.
   - `strict` : Posts must achive a score within the 98th percentile.
 
+I'm still experimenting with these, so it's possible that I change the defaults in the future.
+
 ## What's missing?
 
 Probably many things!
