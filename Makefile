@@ -23,3 +23,6 @@ exec:
 		--tty \
 		${PROJECT} \
 		bash
+
+digest:
+	python run.py
