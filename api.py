@@ -32,7 +32,7 @@ def fetch_posts_and_boosts(
     while response and total_posts_seen < TIMELINE_LIMIT:
 
         # Apply our server-side filters
-        if filter:
+        if filters:
             filtered_response = mastodon_client.filters_apply(response, filters, "home")
         else:
             filtered_response = response
