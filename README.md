@@ -1,6 +1,6 @@
 # Mastodon Digest
 
-This is a Python project that generates a digest of popular Mastodon posts from your home timeline. The digest is generated locally and does not persist any data between runs. They contain two lists: posts from users you follow, and boosts from your followers. Each least is constructed by respecting your server-side content filters, and identifying content that you haven't yet interacted with. Digests are automatically opened locally in your web browser. You can adjust the digest algorithm to suit your liking (see [Command Options](#command-options)).
+This is a Python project that generates a digest of popular Mastodon posts from your home timeline. The digest is generated locally. Not data is intentionally persisted, though your operating system may not clean up temp files immediately. The digests present two lists: posts from users you follow, and boosts from your followers. Each list is constructed by respecting your server-side content filters and identifying content that you haven't yet interacted with. Digests are automatically opened locally in your web browser. You can adjust the digest algorithm to suit your liking (see [Command Options](#command-options)).
 
 ![Mastodon Digest](https://i.imgur.com/ZRE9BKc.png)
 
@@ -33,7 +33,7 @@ You can immediately generate and launch a Mastodon Digest in your local browser 
 python run.py
 ```
 
-The Digest is written to a local temp file.
+The digest is written to a local temp file.
 
 A number of configuration flags are available to adjust the algorithm. You can see the command arguments by passing the `-h` flag:
 
