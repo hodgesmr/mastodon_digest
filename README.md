@@ -33,6 +33,8 @@ You can immediately generate and launch a Mastodon Digest in your local browser 
 python run.py
 ```
 
+The Digest is written to a local temp file.
+
 A number of configuration flags are available to adjust the algorithm. You can see the command arguments by passing the `-h` flag:
 
 ```sh
@@ -78,7 +80,9 @@ Probably many things!
 
 You likely noticed that this repository has no tests. That's because I'm still treating this as a toy and not work. But tests might be good!
 
-I'm still thinking about the best structure / process / whatever to incorporate new interesting algorithms. Maybe I'll devote time to that, maybe not, but you can always fork.
+I'm still thinking about the best structure / process / whatever to incorporate new interesting algorithms. Maybe I'll devote time to that, maybe not.
+
+I've tested this on my Intel and M1 macOS machines. I believe it'll work on other architectures and operating systems, but I haven't tried. The availability of a GUI web browser is important.
 
 ## A Matt Hodges project
 
