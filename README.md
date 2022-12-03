@@ -38,7 +38,7 @@ You can immediately generate and launch a Mastodon Digest in your local browser 
 python run.py
 ```
 
-The digest is written to a local temp file.
+The digest is written to a local temp file as html, and is opened by your default browser.
 
 A number of configuration flags are available to adjust the algorithm. You can see the command arguments by passing the `-h` flag:
 
