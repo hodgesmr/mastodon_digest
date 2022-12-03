@@ -15,6 +15,11 @@ pip isntall -r requirements.txt
 ### Set up the environment
 
 Before you can run the tool locally, you need to copy [.env.example](./.env.example) to [.env](./.env) (which is ignored by git) and fill in the relevant environment variables:
+
+```sh
+cp .env.example .env
+```
+
  - `MASTODON_TOKEN` : This is your access token. You can generate on on your home instance under Preferences > Development.
  - `MASTODON_BASE_URL` : This is the protocol-aware URL of your Mastodon home instance. For example, if you are `@Gargron@mastodon.social`, then you would set `https://mastodon.social`.
  - `MASTODON_USERNAME`: This is your Mastodon account username on your home instance. For example, if you are `@Gargron@mastodon.social`, then you would set `Gargron`.
