@@ -15,7 +15,7 @@ class ScoredPost:
         return self.info["url"]
 
     def get_home_url(self, mastodon_base_url: str) -> str:
-        return f"{mastodon_base_url}/authorize_interaction?uri={self.url}"
+        return f"{mastodon_base_url}/@{self.info['account']['acct']}/{self.info['id']}"
 
     def get_score(self, scorer: Scorer) -> float:
         return scorer.score(self)
