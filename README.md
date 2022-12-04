@@ -8,7 +8,7 @@ This is a Python project that generates a digest of popular Mastodon posts from 
 
 You can run in [Docker](#docker) or in a [local python environment](#local). But first, set up your environment:
 
-Before you can run the tool locally, you need to copy [.env.example](./.env.example) to [.env](./.env) (which is ignored by git) and fill in the relevant environment variables:
+Before you can run the tool locally, you need to copy [.env.example](./.env.example) to .env (which is ignored by git) and fill in the relevant environment variables:
 
 ```sh
 cp .env.example .env
