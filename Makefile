@@ -8,6 +8,8 @@ VENDOR := "Matt Hodges"
 ORG := hodgesmr
 WORKDIR := "/opt/${NAME}"
 
+DOCKER_SCAN_SUGGEST=false
+
 FLAGS ?=
 
 print:
