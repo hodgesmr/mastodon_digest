@@ -1,18 +1,12 @@
 # Mastodon Digest
 
-This is a Python project that generates a digest of popular Mastodon posts from your home timeline. The digest is generated locally. Not data is intentionally persisted, though your operating system may not clean up temp files immediately. The digests present two lists: posts from users you follow, and boosts from your followers. Each list is constructed by respecting your server-side content filters and identifying content that you haven't yet interacted with. Digests are automatically opened locally in your web browser. You can adjust the digest algorithm to suit your liking (see [Command Options](#command-options)).
+This is a Python project that generates a digest of popular Mastodon posts from your home timeline. The digest is generated locally. The digests present two lists: posts from users you follow, and boosts from your followers. Each list is constructed by respecting your server-side content filters and identifying content that you haven't yet interacted with. Digests are automatically opened locally in your web browser. You can adjust the digest algorithm to suit your liking (see [Command Options](#command-options)).
 
 ![Mastodon Digest](https://i.imgur.com/ZRE9BKc.png)
 
-## Local Configuration
+## Run
 
-From within your Python3 environment, simply:
-
-```sh
-pip install -r requirements.txt
-```
-
-### Set up the environment
+You can run in [Docker](#docker) or in a [local python environment](#local). But first, set up your environment:
 
 Before you can run the tool locally, you need to copy [.env.example](./.env.example) to [.env](./.env) (which is ignored by git) and fill in the relevant environment variables:
 
@@ -24,23 +18,54 @@ cp .env.example .env
  - `MASTODON_BASE_URL` : This is the protocol-aware URL of your Mastodon home instance. For example, if you are `@Gargron@mastodon.social`, then you would set `https://mastodon.social`.
  - `MASTODON_USERNAME`: This is your Mastodon account username on your home instance. For example, if you are `@Gargron@mastodon.social`, then you would set `Gargron`.
 
- Then:
+### Docker
 
- ```sh
- source .env
- ```
+First, build the image:
 
-### Usage
+```sh
+make build
+```
 
-You can immediately generate and launch a Mastodon Digest in your local browser with:
+Then you can generate and open a digest:
+
+```sh
+make run
+```
+
+You can also pass [command arguments](#command-arguments):
+
+```sh
+make run FLAGS="-n 8 -s Simple -t lax"
+``` 
+
+### Local
+
+First, make sure you've set your environment variables:
+
+```sh
+set -a
+source source.env
+set +a
+```
+
+From within your Python3 environment, simply:
+
+```sh
+pip install -r requirements.txt
+```
+
+You can immediately generate a Mastodon Digest with:
 
 ```sh
 python run.py
 ```
 
-The digest is written to a local temp file as html, and is opened by your default browser.
+The digest is written to `render/index.html` by default. You can then view it with the browser of your choice.
 
-A number of configuration flags are available to adjust the algorithm. You can see the command arguments by passing the `-h` flag:
+
+## Command arguments
+
+A number of command arguments are available to adjust the algorithm. You can see the command arguments by passing the `-h` flag:
 
 ```sh
 python run.py -h
@@ -51,23 +76,31 @@ usage: mastodon_digest [-h]
                        [-n {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24}]
                        [-s {ExtendedSimple,ExtendedSimpleWeighted,Simple,SimpleWeighted}]
                        [-t {lax,normal,strict}]
+                       [-o OUTPUT_DIR]
 
 options:
   -h, --help            show this help message and exit
   -n {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24}
-                        The number of hours to include in the Mastodon Digest
+                        The number of hours to include in the Mastodon Digest (default: 12)
   -s {ExtendedSimple,ExtendedSimpleWeighted,Simple,SimpleWeighted}
-                        Which post scoring criteria to use. SimpleWeighted is the default.
-                        Simple scorers take a geometric mean of boosts and favs. Extended
-                        scorers include reply counts in the geometric mean. Weighted
-                        scorers multiply the score by an inverse sqaure root of the
-                        author's followers, to reduce the influence of large accounts.
+                        Which post scoring criteria to use. Simple scorers take a geometric
+                        mean of boosts and favs. Extended scorers include reply counts in
+                        the geometric mean. Weighted scorers multiply the score by an
+                        inverse sqaure root of the author's followers, to reduce the
+                        influence of large accounts. (default: SimpleWeighted)
   -t {lax,normal,strict}
-                        Which post threshold criteria to use. Normal is the default. lax =
-                        90th percentile normal = 95th percentile strict = 98th percentile
+                        Which post threshold criteria to use. lax = 90th percentile, normal
+                        = 95th percentile, strict = 98th percentile (default: normal)
+  -o OUTPUT_DIR         Output directory for the rendered digest (default: ./render/)
 ```
 
-#### Command Options
+If you are running with Docker and make, you can pass flags as:
+
+```sh
+make run FLAGS="-n 8 -s Simple -t lax"
+```
+
+#### Algorithm Options
  * `-n` : Number of hours to look back when building your digest. This can be an integer from 1 to 24. Defaults to **12**. I've found that 12 works will in the morning and 8 works well in the evening.
  * `-s` : Scoring method to use. **SimpleWeighted** is the default.
    - `Simple` : Each post is scored with a modified [geometric mean](https://en.wikipedia.org/wiki/Geometric_mean) of its number of boosts and its number of favorites.
