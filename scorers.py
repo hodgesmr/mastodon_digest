@@ -53,8 +53,6 @@ class SimpleScorer(UniformWeight, Scorer):
             # We don't want zeros in other metrics to multiply that out
             # Inflate every value by 1
             metric_average = stats.gmean(
-                # We don't want zeros to multiply out posts with values in the other metric
-                # Inflate every value by 1
                 [
                     scored_post.info["reblogs_count"]+1,
                     scored_post.info["favourites_count"]+1,
