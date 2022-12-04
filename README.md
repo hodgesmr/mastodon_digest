@@ -44,7 +44,7 @@ First, make sure you've set your environment variables:
 
 ```sh
 set -a
-source source.env
+source .env
 set +a
 ```
 
