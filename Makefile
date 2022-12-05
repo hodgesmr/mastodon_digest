@@ -8,6 +8,13 @@ VENDOR := "Matt Hodges"
 ORG := hodgesmr
 WORKDIR := "/opt/${NAME}"
 
+# For running locally. We default to a general python3 but depending on the
+# users environment they may need to specify which version to use. python3.9
+# is the lowest tested with.
+SYSTEM_PYTHON ?= python3
+VENV_DIR := .venv
+PYTHON_BIN := $(VENV_DIR)/bin/python
+
 DOCKER_SCAN_SUGGEST=false
 
 FLAGS ?=
@@ -49,3 +56,19 @@ dev:
 	@echo "Running with local development themes"
 	docker run --env-file .env -it --rm -v "$(PWD)/render:${WORKDIR}/render" -v "$(PWD)/templates:${WORKDIR}/templates" ${ORG}/${NAME} ${FLAGS}
 	python -m webbrowser -t "file://$(PWD)/render/index.html"
+
+# Running locally 
+# We optionally include our .env file if it exists (compatibility with the docker
+# --env-file) and then create a vitualenv as needed for running our local command.
+ifneq (,$(wildcard ./.env))
+    include .env
+    export
+endif
+
+$(PYTHON_BIN):
+	$(SYSTEM_PYTHON) -m venv $(VENV_DIR)
+	$(PYTHON_BIN) -m pip install -r requirements.txt
+
+.PHONY: local
+local: $(PYTHON_BIN)
+	$(PYTHON_BIN) run.py
