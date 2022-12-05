@@ -15,6 +15,9 @@ class Threshold(Enum):
     NORMAL = 95
     STRICT = 98
 
+    def get_name(self):
+        return self.name.lower()
+
     def posts_meeting_criteria(
         self, posts: list[ScoredPost], scorer: Scorer
     ) -> list[ScoredPost]:
@@ -34,7 +37,7 @@ class Threshold(Enum):
 def get_thresholds():
     """Returns a dictionary mapping lowercase threshold names to values"""
 
-    return {i.name.lower(): i.value for i in Threshold}
+    return {i.get_name(): i.value for i in Threshold}
 
 
 def get_threshold_from_name(name: str) -> Threshold:
