@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import os
 import sys
+from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -57,6 +58,9 @@ def run(
             "posts": threshold_posts,
             "boosts": threshold_boosts,
             "mastodon_base_url": mastodon_base_url,
+            "rendered_at": datetime.utcnow().strftime('%B %d, %Y at %H:%M:%S UTC'),
+            "threshold": threshold.get_name(),
+            "scorer": scorer.get_name(),
         },
         output_dir=output_dir,
     )

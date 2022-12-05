@@ -7,7 +7,8 @@
 <body>
     <div id="container">
         <h1>Mastodon Digest</h1>
-        <h3><i>Sourced from your timeline over the past {{ hours }} hours</i></h3>
+        <span id="render-description">Rendered <span id="rendered-value">{{ rendered_at }}</span> from your timeline over the past <span id="hours-value">{{ hours }}</span> hours</span><br />
+        <span id="scorer">Scorer: <span id="scorer-value">{{ scorer }}</span></span><br /><span id="threshold">Threshold: <span id="threshold-value">{{ threshold }}</span></span>
         <h2>Here are some popular posts you may have missed:</h2>
         {% with posts=posts %}
             {% include "posts.html.jinja" %}
