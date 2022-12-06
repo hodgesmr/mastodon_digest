@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 def render_digest(context: dict, output_dir: Path) -> None:
     environment = Environment(loader=FileSystemLoader("templates/"))
-    template = environment.get_template("digest.html.jinja")
+    template = environment.get_template("index.html.jinja")
     output_html = template.render(context)
     output_file_path = output_dir / 'index.html'
     output_file_path.write_text(output_html)
