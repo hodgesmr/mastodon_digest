@@ -54,7 +54,7 @@ def fetch_posts_and_boosts(
                     not scored_post.info["reblogged"]
                     and not scored_post.info["favourited"]
                     and not scored_post.info["bookmarked"]
-                    and scored_post.info["account"]["acct"] != mastodon_username
+                    and scored_post.info["account"]["acct"].strip().lower() != mastodon_username.strip().lower()
                 ):
                     # Append to either the boosts list or the posts lists
                     if boost:
