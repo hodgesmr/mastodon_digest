@@ -106,7 +106,7 @@ make run FLAGS="-n 8 -s Simple -t lax"
    - `Simple` : Each post is scored with a modified [geometric mean](https://en.wikipedia.org/wiki/Geometric_mean) of its number of boosts and its number of favorites.
    - `SimpleWeighted` : The same as `Simple`, but every score is multiplied by the inverse of the square root of the author's follower count. Therefore, authors with very large audiences will need to meet higher boost and favorite numbers. **This is the default scorer**.
    - `ExtendedSimple` : Each post is scored with a modified [geometric mean](https://en.wikipedia.org/wiki/Geometric_mean) of its number of boosts, its number of favorites, and its number of replies.
-   - `ExtendedSimpleWeighted` : The same as `ExtendedSimple`, but every score is multiplied by the inverse of the square root of the author's follower count. Therefore, authors with very large audiences will need to meet higher boost and favorite numbers.
+   - `ExtendedSimpleWeighted` : The same as `ExtendedSimple`, but every score is multiplied by the inverse of the square root of the author's follower count. Therefore, authors with very large audiences will need to meet higher boost, favorite, and reply numbers.
 * `-t` : Threshold for scores to include. **normal** is the default
   - `lax` : Posts must achieve a score within the 90th percentile.
   - `normal` : Posts must achieve a score within the 95th percentile. **This is the default threshold**.
