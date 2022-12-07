@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 def fetch_posts_and_boosts(
     hours: int, mastodon_client: Mastodon, mastodon_username: str
 ) -> tuple[list[ScoredPost], list[ScoredPost]]:
-    """Fetches posts form the home timeline that the account hasn't interactied with"""
+    """Fetches posts form the home timeline that the account hasn't interacted with"""
 
     TIMELINE_LIMIT = 1000
 
@@ -42,7 +42,7 @@ def fetch_posts_and_boosts(
 
             boost = False
             if post["reblog"] is not None:
-                post = post["reblog"]  # look at the bosted post
+                post = post["reblog"]  # look at the boosted post
                 boost = True
 
             scored_post = ScoredPost(post)  # wrap the post data as a ScoredPost
@@ -65,6 +65,6 @@ def fetch_posts_and_boosts(
 
         response = mastodon_client.fetch_previous(
             response
-        )  # fext the previous (because of reverse chron) page of results
+        )  # fetch the previous (because of reverse chron) page of results
 
     return posts, boosts
