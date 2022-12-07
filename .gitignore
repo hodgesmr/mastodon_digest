@@ -1,3 +1,5 @@
+env/
+activate/
 MANIFEST
 build
 dist
