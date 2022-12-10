@@ -27,6 +27,10 @@ def render_digest(context: dict, output_dir: Path) -> None:
     output_file_path.write_text(output_html)
 
 
+def format_base_url(mastodon_base_url: str) -> str:
+    return mastodon_base_url.strip().rstrip("/")
+
+
 def run(
     hours: int,
     scorer: Scorer,
@@ -134,7 +138,7 @@ if __name__ == "__main__":
         scorers[args.scorer](),
         get_threshold_from_name(args.threshold),
         mastodon_token,
-        mastodon_base_url,
+        format_base_url(mastodon_base_url),
         mastodon_username,
         output_dir,
     )
