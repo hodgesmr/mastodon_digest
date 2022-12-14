@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 def fetch_posts_and_boosts(
     hours: int, mastodon_client: Mastodon, mastodon_username: str
 ) -> tuple[list[ScoredPost], list[ScoredPost]]:
-    """Fetches posts form the home timeline that the account hasn't interacted with"""
+    """Fetches posts from the home timeline that the account hasn't interacted with"""
 
     TIMELINE_LIMIT = 1000
 
