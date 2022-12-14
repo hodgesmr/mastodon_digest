@@ -99,6 +99,13 @@ if __name__ == "__main__":
         """,
     )
     arg_parser.add_argument(
+        "-c", "--scorer-config",
+        default="./scorer_cfg.yaml",
+        dest="scorer_config",
+        help="Defines the configuration file for a user configured scorer.",
+        required=False,
+    )
+    arg_parser.add_argument(
         "-t",
         choices=list(thresholds.keys()),
         default="normal",
@@ -117,14 +124,27 @@ if __name__ == "__main__":
         required=False,
     )
     args = arg_parser.parse_args()
+    
+    if args.scorer == "Configured":
+        scorer_config = Path(args.scorer_config)
+        if not scorer_config.exists() or not scorer_config.is_file():
+            sys.exit(f"Scorer config file not found: {args.scorer_config}")
+        scorer_params = scorers[args.scorer].parse_scorer_params(scorer_config)
+    else:
+        if args.scorer_config is not None:
+            print("Please note: The argument '--scorer-config' is only effective for scoring method 'UserConfigured'")
+        scorer_params = {}
 
     output_dir = Path(args.output_dir)
     if not output_dir.exists() or not output_dir.is_dir():
         sys.exit(f"Output directory not found: {args.output_dir}")
 
     mastodon_token = os.getenv("MASTODON_TOKEN")
+    print("token:", mastodon_token)
     mastodon_base_url = os.getenv("MASTODON_BASE_URL")
+    print("url:", mastodon_base_url)
     mastodon_username = os.getenv("MASTODON_USERNAME")
+    print("user:", mastodon_username)
 
     if not mastodon_token:
         sys.exit("Missing environment variable: MASTODON_TOKEN")
@@ -135,7 +155,7 @@ if __name__ == "__main__":
 
     run(
         args.hours,
-        scorers[args.scorer](),
+        scorers[args.scorer](**scorer_params),
         get_threshold_from_name(args.threshold),
         mastodon_token,
         format_base_url(mastodon_base_url),

@@ -2,8 +2,11 @@ from __future__ import annotations
 
 import importlib
 import inspect
+import sys
+import yaml
 from abc import ABC, abstractmethod
 from math import sqrt
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from scipy import stats
@@ -96,6 +99,39 @@ class ExtendedSimpleWeightedScorer(InverseFollowerWeight, ExtendedSimpleScorer):
     @classmethod
     def score(cls, scored_post: ScoredPost) -> ExtendedSimpleWeightedScorer:
         return super().score(scored_post) * super().weight(scored_post)
+
+
+class ConfiguredScorer(Weight, Scorer):
+    @classmethod
+    def parse_scorer_params(cls, cfg_path : Path) -> dict:
+        with open(str(cfg_path.absolute()), "r") as f:
+            pars = yaml.safe_load(f)
+        return pars
+    
+    @classmethod
+    def check_params(cls, pars):
+        if "base_scoring" not in pars:
+            sys.exit("ConfiguredScorer requires parameter 'base_scoring'")
+        admissible_base_scorers = set(get_scorers()).difference({"Configured"})
+        if pars["base_scoring"] not in admissible_base_scorers:
+            sys.exit("ConfiguredScorer requires 'base_scoring' as one of %s"%admissible_base_scorers)
+
+    def score(self, scored_post: ScoredPost) -> ConfiguredScorer:
+        s = self.base_scorer.score(scored_post) * self.weight(scored_post)
+        return s
+    
+    def weight(self, scored_post: ScoredPost) -> Weight:
+        base_weight = self.base_scorer.weight(scored_post)
+        acct = scored_post.info.get("account", {}).get("acct", "")
+        if acct in self.user_amplification:
+            print("here")
+        w = base_weight * self.user_amplification.get(acct, 1.0)
+        return w
+
+    def __init__(self, **pars)->None:
+        ConfiguredScorer.check_params(pars)
+        self.base_scorer = get_scorers()[pars["base_scoring"]]
+        self.user_amplification = pars.get("amplify_accounts", {})
 
 
 def get_scorers():
