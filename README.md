@@ -110,9 +110,9 @@ make run FLAGS="-n 8 -s Simple -t lax"
    - `SimpleWeighted` : The same as `Simple`, but every score is multiplied by the inverse of the square root of the author's follower count. Therefore, authors with very large audiences will need to meet higher boost and favorite numbers. **This is the default scorer**.
    - `ExtendedSimple` : Each post is scored with a modified [geometric mean](https://en.wikipedia.org/wiki/Geometric_mean) of its number of boosts, its number of favorites, and its number of replies.
    - `ExtendedSimpleWeighted` : The same as `ExtendedSimple`, but every score is multiplied by the inverse of the square root of the author's follower count. Therefore, authors with very large audiences will need to meet higher boost, favorite, and reply numbers.
-   - `Configured` : User options given in a configuration file (see option `-c`) are taken into account for scoring, the base scoring is specified in the file via the parameter `base_scorer`, which must be one of the above.
+   - `Configured` : User options given in a configuration file (see option `-c`) are taken into account for scoring, the base scoring is specified in the file via the parameter `base_scoring`, which must be one of the above.
 * `-c` : Configuration file required if the scoring method is `Configured`. Refer to default config `scorer_cfg.yaml` as template. Parameters implemented so far:
-   - `base_scorer` : basic scoring method (see option `-s`)
+   - `base_scoring` : basic scoring method (see option `-s`)
    - `amplify_accounts` : Map of weight factors, by which posts of specified accounts are multiplied.
 * `-t` : Threshold for scores to include. **normal** is the default
   - `lax` : Posts must achieve a score within the 90th percentile.
