@@ -132,7 +132,7 @@ if __name__ == "__main__":
         scorer_params = scorers[args.scorer].parse_scorer_params(scorer_config)
     else:
         if args.scorer_config is not None:
-            print("Please note: The argument '--scorer-config' is only effective for scoring method 'UserConfigured'")
+            print("Please note: The argument '--scorer-config' is only effective for scoring method 'Configured'")
         scorer_params = {}
 
     output_dir = Path(args.output_dir)

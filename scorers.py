@@ -123,15 +123,13 @@ class ConfiguredScorer(Weight, Scorer):
     def weight(self, scored_post: ScoredPost) -> Weight:
         base_weight = self.base_scorer.weight(scored_post)
         acct = scored_post.info.get("account", {}).get("acct", "")
-        if acct in self.user_amplification:
-            print("here")
-        w = base_weight * self.user_amplification.get(acct, 1.0)
+        w = base_weight * self.amplify_accounts.get(acct, 1.0)
         return w
 
     def __init__(self, **pars)->None:
         ConfiguredScorer.check_params(pars)
         self.base_scorer = get_scorers()[pars["base_scoring"]]
-        self.user_amplification = pars.get("amplify_accounts", {})
+        self.amplify_accounts = pars.get("amplify_accounts", {})
 
 
 def get_scorers():
