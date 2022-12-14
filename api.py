@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 
 def fetch_posts_and_boosts(
-    hours: int, mastodon_client: Mastodon, mastodon_username: str
+    hours: int, mastodon_client: Mastodon, mastodon_username: str, timeline: str
 ) -> tuple[list[ScoredPost], list[ScoredPost]]:
     """Fetches posts form the home timeline that the account hasn't interacted with"""
 
@@ -27,8 +27,27 @@ def fetch_posts_and_boosts(
     seen_post_urls = set()
     total_posts_seen = 0
 
-    # Iterate over our home timeline until we run out of posts or we hit the limit
-    response = mastodon_client.timeline(min_id=start)
+    # If timeline name is specified as hashtag:tagName or list:list-name, look-up with those names,
+    # else accept 'federated' and 'local' to process from the server public and local timelines.
+    #
+    # We default to 'home' if the name is unrecognized
+    if ":" in timeline:
+        timelineType, timelineName = timeline.split(":", 1)
+    else:
+        timelineType = timeline
+
+    if timelineType == "hashtag":
+        response = mastodon_client.timeline_hashtag(timelineName, min_id=start)
+    elif timelineType == "list":
+        response = mastodon_client.timeline_list(timelineName, min_id=start)
+    elif timelineType == "federated":
+        response = mastodon_client.timeline_public(min_id=start)
+    elif timelineType == "local":
+        response = mastodon_client.timeline_local(min_id=start)
+    else:
+        response = mastodon_client.timeline(min_id=start)
+
+    # Iterate over our timeline until we run out of posts or we hit the limit
     while response and total_posts_seen < TIMELINE_LIMIT:
 
         # Apply our server-side filters

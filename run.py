@@ -38,6 +38,7 @@ def run(
     mastodon_token: str,
     mastodon_base_url: str,
     mastodon_username: str,
+    timeline: str,
     output_dir: Path,
 ) -> None:
 
@@ -49,25 +50,29 @@ def run(
     )
 
     # 1. Fetch all the posts and boosts from our home timeline that we haven't interacted with
-    posts, boosts = fetch_posts_and_boosts(hours, mst, mastodon_username)
+    posts, boosts = fetch_posts_and_boosts(hours, mst, mastodon_username, timeline)
 
     # 2. Score them, and return those that meet our threshold
     threshold_posts = threshold.posts_meeting_criteria(posts, scorer)
     threshold_boosts = threshold.posts_meeting_criteria(boosts, scorer)
 
     # 3. Build the digest
-    render_digest(
-        context={
-            "hours": hours,
-            "posts": threshold_posts,
-            "boosts": threshold_boosts,
-            "mastodon_base_url": mastodon_base_url,
-            "rendered_at": datetime.utcnow().strftime('%B %d, %Y at %H:%M:%S UTC'),
-            "threshold": threshold.get_name(),
-            "scorer": scorer.get_name(),
-        },
-        output_dir=output_dir,
-    )
+    if len(threshold_posts) == 0 and len(threshold_boosts) == 0:
+        sys.exit(f"No posts met the threshold for the digest. Exiting.")
+    else:
+        render_digest(
+            context={
+                "hours": hours,
+                "posts": threshold_posts,
+                "boosts": threshold_boosts,
+                "mastodon_base_url": mastodon_base_url,
+                "rendered_at": datetime.utcnow().strftime('%B %d, %Y at %H:%M:%S UTC'),
+                "timeline_name": timeline,
+                "threshold": threshold.get_name(),
+                "scorer": scorer.get_name(),
+            },
+            output_dir=output_dir,
+        )
 
 
 if __name__ == "__main__":
@@ -77,6 +82,13 @@ if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser(
         prog="mastodon_digest",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    arg_parser.add_argument(
+        "-f", # for "feed" since t-for-timeline is taken
+        default="home",
+        dest="timeline",
+        help="The timeline to summarize: Expects 'home', 'local' or 'federated', or 'list:list name', 'hashtag:tag'. Defaults to 'home'",
+        required=False,
     )
     arg_parser.add_argument(
         "-n",
@@ -140,5 +152,6 @@ if __name__ == "__main__":
         mastodon_token,
         format_base_url(mastodon_base_url),
         mastodon_username,
+        args.timeline,
         output_dir,
     )
