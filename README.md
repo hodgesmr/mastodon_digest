@@ -82,10 +82,11 @@ options:
   -n {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24}
                         The number of hours to include in the Mastodon Digest (default: 12)
   -s {ExtendedSimple,ExtendedSimpleWeighted,Simple,SimpleWeighted}
-                        Which post scoring criteria to use. Simple scorers take a geometric mean of boosts and favs. Extended
-                        scorers include reply counts in the geometric mean. Weighted scorers multiply the score by an inverse
-                        sqaure root of the author's followers, to reduce the influence of large accounts. (default:
-                        SimpleWeighted)
+                        Which post scoring criteria to use. Simple scorers take a geometric
+                        mean of boosts and favs. Extended scorers include reply counts in
+                        the geometric mean. Weighted scorers multiply the score by an
+                        inverse square root of the author's followers, to reduce the
+                        influence of large accounts. (default: SimpleWeighted)
   -t {lax,normal,strict}
                         Which post threshold criteria to use. lax = 90th percentile, normal = 95th percentile, strict = 98th
                         percentile (default: normal)

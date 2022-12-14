@@ -106,7 +106,7 @@ if __name__ == "__main__":
         help="""Which post scoring criteria to use.
             Simple scorers take a geometric mean of boosts and favs.
             Extended scorers include reply counts in the geometric mean.
-            Weighted scorers multiply the score by an inverse sqaure root
+            Weighted scorers multiply the score by an inverse square root
             of the author's followers, to reduce the influence of large accounts.
         """,
     )
