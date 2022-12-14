@@ -74,7 +74,6 @@ def run(
             output_dir=output_dir,
         )
 
-
 if __name__ == "__main__":
     scorers = get_scorers()
     thresholds = get_thresholds()
