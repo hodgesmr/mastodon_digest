@@ -14,7 +14,7 @@ def fetch_posts_and_boosts(
 ) -> tuple[list[ScoredPost], list[ScoredPost]]:
     """Fetches posts from the home timeline that the account hasn't interacted with"""
 
-    TIMELINE_LIMIT = 1000
+    TIMELINE_LIMIT = 1000  # Should this be documented? Configurable?
 
     # First, get our filters
     filters = mastodon_client.filters()
