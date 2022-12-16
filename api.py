@@ -32,14 +32,17 @@ def fetch_posts_and_boosts(
     #
     # We default to 'home' if the name is unrecognized
     if ":" in timeline:
-        timelineType, timelineName = timeline.split(":", 1)
+        timelineType, timelineId = timeline.lower().split(":", 1)
     else:
-        timelineType = timeline
+        timelineType = timeline.lower()
 
     if timelineType == "hashtag":
-        response = mastodon_client.timeline_hashtag(timelineName, min_id=start)
+        response = mastodon_client.timeline_hashtag(timelineId, min_id=start)
     elif timelineType == "list":
-        response = mastodon_client.timeline_list(timelineName, min_id=start)
+        if not timelineId.isnumeric():
+            raise TypeError('Cannot load list timeline: ID must be numeric, as in: https://example.social/lists/4')
+
+        response = mastodon_client.timeline_list(timelineId, min_id=start)
     elif timelineType == "federated":
         response = mastodon_client.timeline_public(min_id=start)
     elif timelineType == "local":

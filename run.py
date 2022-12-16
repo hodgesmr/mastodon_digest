@@ -50,7 +50,7 @@ def run(
     )
 
     # 1. Fetch all the posts and boosts from our home timeline that we haven't interacted with
-    posts, boosts = fetch_posts_and_boosts(hours, mst, mastodon_username, timeline)
+    posts, boosts = fetch_posts_and_boosts(hours, mst, mastodon_username, timeline.lower())
 
     # 2. Score them, and return those that meet our threshold
     threshold_posts = threshold.posts_meeting_criteria(posts, scorer)
@@ -58,7 +58,7 @@ def run(
 
     # 3. Build the digest
     if len(threshold_posts) == 0 and len(threshold_boosts) == 0:
-        sys.exit(f"No posts met the threshold for the digest. Exiting.")
+        sys.exit(f"No posts or boost were found for the provided digest arguments. Exiting.")
     else:
         render_digest(
             context={
@@ -87,7 +87,7 @@ if __name__ == "__main__":
         "-f", # for "feed" since t-for-timeline is taken
         default="home",
         dest="timeline",
-        help="The timeline to summarize: Expects 'home', 'local' or 'federated', or 'list:list name', 'hashtag:tag'. Defaults to 'home'",
+        help="The timeline to summarize: Expects 'home', 'local' or 'federated', or 'list:id', 'hashtag:tag'. Defaults to 'home'",
         required=False,
     )
     arg_parser.add_argument(
@@ -103,10 +103,10 @@ if __name__ == "__main__":
         choices=list(scorers.keys()),
         default="SimpleWeighted",
         dest="scorer",
-        help="""Which post scoring criteria to use.  
-            Simple scorers take a geometric mean of boosts and favs. 
-            Extended scorers include reply counts in the geometric mean. 
-            Weighted scorers multiply the score by an inverse sqaure root 
+        help="""Which post scoring criteria to use.
+            Simple scorers take a geometric mean of boosts and favs.
+            Extended scorers include reply counts in the geometric mean.
+            Weighted scorers multiply the score by an inverse sqaure root
             of the author's followers, to reduce the influence of large accounts.
         """,
     )
@@ -152,6 +152,6 @@ if __name__ == "__main__":
         mastodon_token,
         format_base_url(mastodon_base_url),
         mastodon_username,
-        args.timeline,
+        args.timeline.strip(),
         output_dir,
     )
