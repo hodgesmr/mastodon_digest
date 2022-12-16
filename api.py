@@ -40,7 +40,7 @@ def fetch_posts_and_boosts(
         response = mastodon_client.timeline_hashtag(timelineId, min_id=start)
     elif timelineType == "list":
         if not timelineId.isnumeric():
-            raise TypeError('Cannot load list timeline: ID must be numeric, as in: https://example.social/lists/4')
+            raise TypeError('Cannot load list timeline: ID must be numeric, e.g.: https://example.social/lists/4 would be list:4')
 
         response = mastodon_client.timeline_list(timelineId, min_id=start)
     elif timelineType == "federated":
