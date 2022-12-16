@@ -87,7 +87,7 @@ if __name__ == "__main__":
         "-f", # for "feed" since t-for-timeline is taken
         default="home",
         dest="timeline",
-        help="The timeline to summarize: Expects 'home', 'local' or 'federated', or 'list:id', 'hashtag:tag'. Defaults to 'home'",
+        help="The timeline to summarize: Expects 'home', 'local' or 'federated', or 'list:id', 'hashtag:tag'",
         required=False,
     )
     arg_parser.add_argument(
