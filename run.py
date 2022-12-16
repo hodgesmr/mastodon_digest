@@ -102,10 +102,10 @@ if __name__ == "__main__":
         choices=list(scorers.keys()),
         default="SimpleWeighted",
         dest="scorer",
-        help="""Which post scoring criteria to use.
-            Simple scorers take a geometric mean of boosts and favs.
-            Extended scorers include reply counts in the geometric mean.
-            Weighted scorers multiply the score by an inverse square root
+        help="""Which post scoring criteria to use.  
+            Simple scorers take a geometric mean of boosts and favs. 
+            Extended scorers include reply counts in the geometric mean. 
+            Weighted scorers multiply the score by an inverse square root 
             of the author's followers, to reduce the influence of large accounts.
         """,
     )
