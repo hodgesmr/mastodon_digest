@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta chartset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Mastodon Digest</title>
     {% include "style.html.jinja" %}
@@ -8,17 +9,44 @@
 </head>
 <body>
     <div id="container">
-        <h1>Mastodon Digest</h1>
-        <span id="render-description">Rendered <span id="rendered-value">{{ rendered_at }}</span> from timeline “{{ timeline_name }}” over the past <span id="hours-value">{{ hours }}</span> hours</span><br />
-        <span id="scorer">Scorer: <span id="scorer-value">{{ scorer }}</span></span><br /><span id="threshold">Threshold: <span id="threshold-value">{{ threshold }}</span></span>
-        <h2>Here are some popular posts you may have missed:</h2>
-        {% with posts=posts %}
-            {% include "posts.html.jinja" %}
-        {% endwith %}
-        <h2>Here are some popular boosts you may have missed:</h2>
-        {% with posts=boosts %}
-            {% include "posts.html.jinja" %}
-        {% endwith %}
+        <header>
+            <h1>Mastodon Digest</h1>
+            <p class="render-description">Showing posts {% if boosts %}and boosts{% endif %} from <span class="timeline-name">{{ timeline_name }}</span> timeline</p>
+
+            <details class="render-info">
+                <summary>Digest Render Details</summary>
+                <dl>
+                    <dt>Rendered at</dt>
+                    <dd>{{ rendered_at }}</dd>
+                    <dt>Source timeline</dt>
+                    <dd>{{ timeline_name }}</dd>
+                    <dt>Time period</dt>
+                    <dd>{{ hours }} hours</dd>
+                    <dt>Scorer</dt>
+                    <dd><code>{{ scorer }}</code></dd>
+                    <dt>Threshold</dt>
+                    <dd><code>{{ threshold }}</code></dd>
+                </dl>
+            </details>
+        </header>
+
+        <section class="posts">
+        {% if posts %}
+            <h2>Here are some popular posts you may have missed:</h2>
+            {% with posts=posts %}
+                {% include "posts.html.jinja" %}
+            {% endwith %}
+        {% endif %}
+        </section>
+
+        <section class="posts">
+        {% if boosts %}
+            <h2>Here are some popular boosts you may have missed:</h2>
+            {% with posts=boosts %}
+                {% include "posts.html.jinja" %}
+            {% endwith %}
+        {% endif %}
+        </section>
     </div>
 </body>
 </html>

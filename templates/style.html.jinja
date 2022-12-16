@@ -9,7 +9,11 @@
         margin: auto;
         max-width: 640px;
         padding: 10px;
-        text-align: center;
+        margin: 0 auto;
+    }
+
+    .posts {
+        align: center;
     }
 
     div.post {
@@ -36,32 +40,34 @@
         color: white;
     }
 
-    span#render-description {
+    .render-description {
+        margin: 20px 0;
         color: #D3D3D3;
     }
 
-    span#scorer {
+    .render-description .timeline-name {
+        font-weight: bold;
+    }
+
+    .render-info {
         color: #D3D3D3;
+        font-size: 80%;
+        max-width: 640px;
     }
 
-    span#scorer-value {
+    .render-info summary {
+        cursor: pointer;
+    }
+
+    .render-info dl {
+        border: 1px #D3D3D3 solid;
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+    .render-info dt {
         font-weight: bold;
-    }
-
-    span#threshold {
-        color: #D3D3D3;
-    }
-
-    span#threshold-value {
-        font-weight: bold;
-    }
-
-    span#rendered-value {
-        font-weight: bold;
-    }
-
-    span#hours-value {
-        font-weight: bold;
+        margin: 5px 0;
     }
 
     iframe.mastodon-embed {
