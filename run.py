@@ -23,7 +23,7 @@ def render_digest(context: dict, output_dir: Path) -> None:
     environment = Environment(loader=FileSystemLoader("templates/"))
     template = environment.get_template("index.html.jinja")
     output_html = template.render(context)
-    output_file_path = output_dir / 'index.html'
+    output_file_path = output_dir / "index.html"
     output_file_path.write_text(output_html)
 
 
@@ -50,7 +50,7 @@ def run(
     )
 
     # 1. Fetch all the posts and boosts from our home timeline that we haven't interacted with
-    posts, boosts = fetch_posts_and_boosts(hours, mst, mastodon_username, timeline.lower())
+    posts, boosts = fetch_posts_and_boosts(hours, mst, mastodon_username, timeline)
 
     # 2. Score them, and return those that meet our threshold
     threshold_posts = threshold.posts_meeting_criteria(posts, scorer)
@@ -58,7 +58,9 @@ def run(
 
     # 3. Build the digest
     if len(threshold_posts) == 0 and len(threshold_boosts) == 0:
-        sys.exit(f"No posts or boost were found for the provided digest arguments. Exiting.")
+        sys.exit(
+            f"No posts or boosts were found for the provided digest arguments. Exiting."
+        )
     else:
         render_digest(
             context={
@@ -66,13 +68,14 @@ def run(
                 "posts": threshold_posts,
                 "boosts": threshold_boosts,
                 "mastodon_base_url": mastodon_base_url,
-                "rendered_at": datetime.utcnow().strftime('%B %d, %Y at %H:%M:%S UTC'),
+                "rendered_at": datetime.utcnow().strftime("%B %d, %Y at %H:%M:%S UTC"),
                 "timeline_name": timeline,
                 "threshold": threshold.get_name(),
                 "scorer": scorer.get_name(),
             },
             output_dir=output_dir,
         )
+
 
 if __name__ == "__main__":
     scorers = get_scorers()
@@ -83,7 +86,7 @@ if __name__ == "__main__":
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     arg_parser.add_argument(
-        "-f", # for "feed" since t-for-timeline is taken
+        "-f",  # for "feed" since t-for-timeline is taken
         default="home",
         dest="timeline",
         help="The timeline to summarize: Expects 'home', 'local' or 'federated', or 'list:id', 'hashtag:tag'",
@@ -129,9 +132,18 @@ if __name__ == "__main__":
     )
     args = arg_parser.parse_args()
 
+    # Attempt to validate the output directory
     output_dir = Path(args.output_dir)
     if not output_dir.exists() or not output_dir.is_dir():
         sys.exit(f"Output directory not found: {args.output_dir}")
+
+    # Loosely validate the timeline argument, so that if a completely unexpected string is entered,
+    # we explicitly reset to 'Home', which makes the rendered output cleaner.
+    timeline = args.timeline.strip().lower()
+    validTimelineTypes = ["home", "local", "federated", "hashtag", "list"]
+    timelineType, *_ = timeline.split(":", 1)
+    if not timelineType in validTimelineTypes:
+        timeline = "home"
 
     mastodon_token = os.getenv("MASTODON_TOKEN")
     mastodon_base_url = os.getenv("MASTODON_BASE_URL")
@@ -143,14 +155,6 @@ if __name__ == "__main__":
         sys.exit("Missing environment variable: MASTODON_BASE_URL")
     if not mastodon_username:
         sys.exit("Missing environment variable: MASTODON_USERNAME")
-
-    # Loosely validate the timeline argument, so that if a completely unexpected string is entered,
-    # we explicitly reset to 'Home', which makes the rendered output cleaner.
-    timeline = args.timeline.strip().lower()
-    validTimelineTypes = ['home', 'local', 'federated', 'hashtag', 'list']
-    timelineType, *_ = timeline.split(":", 1)
-    if not timelineType in validTimelineTypes:
-        timeline = 'home'
 
     run(
         args.hours,
