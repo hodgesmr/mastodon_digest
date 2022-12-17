@@ -19,7 +19,7 @@ RUN venvs/$NAME/bin/pip install --upgrade pip
 RUN venvs/$NAME/bin/pip install -r requirements.txt
 
 COPY templates/ ./templates/
-COPY *.py .
+COPY *.py ./
 
 LABEL org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.name=$NAME \
