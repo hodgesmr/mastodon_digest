@@ -36,7 +36,7 @@ You can also pass [command arguments](#command-arguments):
 
 ```sh
 make run FLAGS="-n 8 -s Simple -t lax"
-``` 
+```
 
 ### Local
 
@@ -72,14 +72,13 @@ python run.py -h
 ```
 
 ```
-usage: mastodon_digest [-h]
-                       [-n {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24}]
-                       [-s {ExtendedSimple,ExtendedSimpleWeighted,Simple,SimpleWeighted}]
-                       [-t {lax,normal,strict}]
+usage: mastodon_digest [-h] [-f TIMELINE] [-n {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24}]
+                       [-s {ExtendedSimple,ExtendedSimpleWeighted,Simple,SimpleWeighted}] [-t {lax,normal,strict}]
                        [-o OUTPUT_DIR]
 
 options:
   -h, --help            show this help message and exit
+  -f TIMELINE           The timeline to summarize: Expects 'home', 'local' or 'federated', or 'list:id', 'hashtag:tag'. (default: home)
   -n {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24}
                         The number of hours to include in the Mastodon Digest (default: 12)
   -s {ExtendedSimple,ExtendedSimpleWeighted,Simple,SimpleWeighted}
@@ -89,8 +88,8 @@ options:
                         inverse square root of the author's followers, to reduce the
                         influence of large accounts. (default: SimpleWeighted)
   -t {lax,normal,strict}
-                        Which post threshold criteria to use. lax = 90th percentile, normal
-                        = 95th percentile, strict = 98th percentile (default: normal)
+                        Which post threshold criteria to use. lax = 90th percentile, normal = 95th percentile, strict = 98th
+                        percentile (default: normal)
   -o OUTPUT_DIR         Output directory for the rendered digest (default: ./render/)
 ```
 
@@ -101,16 +100,22 @@ make run FLAGS="-n 8 -s Simple -t lax"
 ```
 
 #### Algorithm Options
+ * `-f` : Timeline feed to source from. **home** is the default.
+    - `home` : Your home timeline.
+    - `local` : The local timeline for your instance; all the posts from users in an instance. This is more useful on small/medium-sized instances. Consider using a much smaller value for `-n` to limit the number of posts analysed.
+    - `federated` : The federated public timeline on your instance; all posts that your instance has seen. This is useful for discovering posts on very small or personal instances.
+    - `hashtag:HashTagName` : The timeline for the specified #hashtag. (Do not include the `#` in the name.)
+    - `list:3` : A list timeline. Lists are given numeric IDs (as in their URL, e.g. `https://example.social/lists/2`), which you must use for input here, not the list name.
  * `-n` : Number of hours to look back when building your digest. This can be an integer from 1 to 24. Defaults to **12**. I've found that 12 works well in the morning and 8 works well in the evening.
  * `-s` : Scoring method to use. **SimpleWeighted** is the default.
-   - `Simple` : Each post is scored with a modified [geometric mean](https://en.wikipedia.org/wiki/Geometric_mean) of its number of boosts and its number of favorites.
-   - `SimpleWeighted` : The same as `Simple`, but every score is multiplied by the inverse of the square root of the author's follower count. Therefore, authors with very large audiences will need to meet higher boost and favorite numbers. **This is the default scorer**.
-   - `ExtendedSimple` : Each post is scored with a modified [geometric mean](https://en.wikipedia.org/wiki/Geometric_mean) of its number of boosts, its number of favorites, and its number of replies.
-   - `ExtendedSimpleWeighted` : The same as `ExtendedSimple`, but every score is multiplied by the inverse of the square root of the author's follower count. Therefore, authors with very large audiences will need to meet higher boost, favorite, and reply numbers.
+    - `Simple` : Each post is scored with a modified [geometric mean](https://en.wikipedia.org/wiki/Geometric_mean) of its number of boosts and its number of favorites.
+    - `SimpleWeighted` : The same as `Simple`, but every score is multiplied by the inverse of the square root of the author's follower count. Therefore, authors with very large audiences will need to meet higher boost and favorite numbers. **This is the default scorer**.
+    - `ExtendedSimple` : Each post is scored with a modified [geometric mean](https://en.wikipedia.org/wiki/Geometric_mean) of its number of boosts, its number of favorites, and its number of replies.
+    - `ExtendedSimpleWeighted` : The same as `ExtendedSimple`, but every score is multiplied by the inverse of the square root of the author's follower count. Therefore, authors with very large audiences will need to meet higher boost, favorite, and reply numbers.
 * `-t` : Threshold for scores to include. **normal** is the default
-  - `lax` : Posts must achieve a score within the 90th percentile.
-  - `normal` : Posts must achieve a score within the 95th percentile. **This is the default threshold**.
-  - `strict` : Posts must achive a score within the 98th percentile.
+    - `lax` : Posts must achieve a score within the 90th percentile.
+    - `normal` : Posts must achieve a score within the 95th percentile. **This is the default threshold**.
+    - `strict` : Posts must achive a score within the 98th percentile.
 
 I'm still experimenting with these, so it's possible that I change the defaults in the future.
 

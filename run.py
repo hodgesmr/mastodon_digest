@@ -38,6 +38,7 @@ def run(
     mastodon_token: str,
     mastodon_base_url: str,
     mastodon_username: str,
+    timeline: str,
     output_dir: Path,
 ) -> None:
 
@@ -49,26 +50,29 @@ def run(
     )
 
     # 1. Fetch all the posts and boosts from our home timeline that we haven't interacted with
-    posts, boosts = fetch_posts_and_boosts(hours, mst, mastodon_username)
+    posts, boosts = fetch_posts_and_boosts(hours, mst, mastodon_username, timeline.lower())
 
     # 2. Score them, and return those that meet our threshold
     threshold_posts = threshold.posts_meeting_criteria(posts, scorer)
     threshold_boosts = threshold.posts_meeting_criteria(boosts, scorer)
 
     # 3. Build the digest
-    render_digest(
-        context={
-            "hours": hours,
-            "posts": threshold_posts,
-            "boosts": threshold_boosts,
-            "mastodon_base_url": mastodon_base_url,
-            "rendered_at": datetime.utcnow().strftime('%B %d, %Y at %H:%M:%S UTC'),
-            "threshold": threshold.get_name(),
-            "scorer": scorer.get_name(),
-        },
-        output_dir=output_dir,
-    )
-
+    if len(threshold_posts) == 0 and len(threshold_boosts) == 0:
+        sys.exit(f"No posts or boost were found for the provided digest arguments. Exiting.")
+    else:
+        render_digest(
+            context={
+                "hours": hours,
+                "posts": threshold_posts,
+                "boosts": threshold_boosts,
+                "mastodon_base_url": mastodon_base_url,
+                "rendered_at": datetime.utcnow().strftime('%B %d, %Y at %H:%M:%S UTC'),
+                "timeline_name": timeline,
+                "threshold": threshold.get_name(),
+                "scorer": scorer.get_name(),
+            },
+            output_dir=output_dir,
+        )
 
 if __name__ == "__main__":
     scorers = get_scorers()
@@ -77,6 +81,13 @@ if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser(
         prog="mastodon_digest",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    arg_parser.add_argument(
+        "-f", # for "feed" since t-for-timeline is taken
+        default="home",
+        dest="timeline",
+        help="The timeline to summarize: Expects 'home', 'local' or 'federated', or 'list:id', 'hashtag:tag'",
+        required=False,
     )
     arg_parser.add_argument(
         "-n",
@@ -91,10 +102,10 @@ if __name__ == "__main__":
         choices=list(scorers.keys()),
         default="SimpleWeighted",
         dest="scorer",
-        help="""Which post scoring criteria to use.  
-            Simple scorers take a geometric mean of boosts and favs. 
-            Extended scorers include reply counts in the geometric mean. 
-            Weighted scorers multiply the score by an inverse square root 
+        help="""Which post scoring criteria to use.
+            Simple scorers take a geometric mean of boosts and favs.
+            Extended scorers include reply counts in the geometric mean.
+            Weighted scorers multiply the score by an inverse square root
             of the author's followers, to reduce the influence of large accounts.
         """,
     )
@@ -133,6 +144,14 @@ if __name__ == "__main__":
     if not mastodon_username:
         sys.exit("Missing environment variable: MASTODON_USERNAME")
 
+    # Loosely validate the timeline argument, so that if a completely unexpected string is entered,
+    # we explicitly reset to 'Home', which makes the rendered output cleaner.
+    timeline = args.timeline.strip().lower()
+    validTimelineTypes = ['home', 'local', 'federated', 'hashtag', 'list']
+    timelineType, *_ = timeline.split(":", 1)
+    if not timelineType in validTimelineTypes:
+        timeline = 'home'
+
     run(
         args.hours,
         scorers[args.scorer](),
@@ -140,5 +159,6 @@ if __name__ == "__main__":
         mastodon_token,
         format_base_url(mastodon_base_url),
         mastodon_username,
+        timeline,
         output_dir,
     )
