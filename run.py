@@ -102,10 +102,10 @@ if __name__ == "__main__":
         choices=list(scorers.keys()),
         default="SimpleWeighted",
         dest="scorer",
-        help="""Which post scoring criteria to use.  
-            Simple scorers take a geometric mean of boosts and favs. 
-            Extended scorers include reply counts in the geometric mean. 
-            Weighted scorers multiply the score by an inverse square root 
+        help="""Which post scoring criteria to use.
+            Simple scorers take a geometric mean of boosts and favs.
+            Extended scorers include reply counts in the geometric mean.
+            Weighted scorers multiply the score by an inverse square root
             of the author's followers, to reduce the influence of large accounts.
         """,
     )
@@ -144,6 +144,14 @@ if __name__ == "__main__":
     if not mastodon_username:
         sys.exit("Missing environment variable: MASTODON_USERNAME")
 
+    # Loosely validate the timeline argument, so that if a completely unexpected string is entered,
+    # we explicitly reset to 'Home', which makes the rendered output cleaner.
+    timeline = args.timeline.strip().lower()
+    validTimelineTypes = ['home', 'local', 'federated', 'hashtag', 'list']
+    timelineType, *_ = timeline.split(":", 1)
+    if not timelineType in validTimelineTypes:
+        timeline = 'home'
+
     run(
         args.hours,
         scorers[args.scorer](),
@@ -151,6 +159,6 @@ if __name__ == "__main__":
         mastodon_token,
         format_base_url(mastodon_base_url),
         mastodon_username,
-        args.timeline.strip(),
+        timeline,
         output_dir,
     )
