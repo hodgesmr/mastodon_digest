@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta chartset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mastodon Digest</title>
+    {% include "style.html.jinja" %}
+    {% include "scripts.html.jinja" %}
+</head>
+<body>
+    <div id="container">
+<<<<<<< HEAD:templates/index.html.jinja
+        <header>
+            <h1>Mastodon Digest</h1>
+
+            <details class="render-info">
+                <summary>Configuration Details</summary>
+                    Rendered: <span class="render-info-value">{{ rendered_at }}</span><br />
+                    Source: <span class="render-info-value">{{ timeline_name }}</span><br />
+                    Hours: <span class="render-info-value">{{ hours }}</span><br />
+                    Scorer: <span class="render-info-value">{{ scorer }}</span><br />
+                    Threshold: <span class="render-info-value">{{ threshold }}</span><br />
+
+            </details>
+        </header>
+
+        <section class="posts">
+        {% if posts %}
+            <h2>Here are some popular posts you may have missed:</h2>
+            {% with posts=posts %}
+                {% include "posts.html.jinja" %}
+            {% endwith %}
+        {% endif %}
+        </section>
+
+        <section class="posts">
+        {% if boosts %}
+            <h2>Here are some popular boosts you may have missed:</h2>
+            {% with posts=boosts %}
+                {% include "posts.html.jinja" %}
+            {% endwith %}
+        {% endif %}
+        </section>
+||||||| parent of 65c8c63 (Restructure templates into shared pieces and default/light variant files):templates/index.html.jinja
+        <h1>Mastodon Digest</h1>
+        <span id="render-description">Rendered <span id="rendered-value">{{ rendered_at }}</span> from your timeline over the past <span id="hours-value">{{ hours }}</span> hours</span><br />
+        <span id="scorer">Scorer: <span id="scorer-value">{{ scorer }}</span></span><br /><span id="threshold">Threshold: <span id="threshold-value">{{ threshold }}</span></span>
+        <h2>Here are some popular posts you may have missed:</h2>
+        {% with posts=posts %}
+            {% include "posts.html.jinja" %}
+        {% endwith %}
+        <h2>Here are some popular boosts you may have missed:</h2>
+        {% with posts=boosts %}
+            {% include "posts.html.jinja" %}
+        {% endwith %}
+=======
+        <h1>Mastodon Digest</h1>
+        {% include "debug-info.html.jinja" %}
+
+        <h2>Here are some popular posts you may have missed:</h2>
+        {% with posts=posts %}
+            {% include "posts.html.jinja" %}
+        {% endwith %}
+        <h2>Here are some popular boosts you may have missed:</h2>
+        {% with posts=boosts %}
+            {% include "posts.html.jinja" %}
+        {% endwith %}
+>>>>>>> 65c8c63 (Restructure templates into shared pieces and default/light variant files):templates/themes/default/index.html.jinja
+    </div>
+</body>
+</html>
