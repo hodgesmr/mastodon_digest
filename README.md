@@ -121,7 +121,7 @@ make run FLAGS="-n 8 -s Simple -t lax"
 
 I'm still experimenting with these, so it's possible that I change the defaults in the future.
 
-#### Theme Themes
+#### Theme Options
 
 Two basic templates for the digest are provided, `default` and `light`. You can create new templates by adding a directory to `templates/themes/my-theme`. You must create `index.html.jinja` as the root template.
 
