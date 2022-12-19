@@ -127,7 +127,7 @@ You likely noticed that this repository has no tests. That's because I'm still t
 
 I'm still thinking about the best structure / process / whatever to incorporate new interesting algorithms. Maybe I'll devote time to that, maybe not.
 
-I've tested this on my Intel and M1 macOS machines. I believe it'll work on other architectures and operating systems, but I haven't tried. The availability of a GUI web browser is important.
+I've tested this on my Intel and M1 macOS machines. Ubuntu users say it works. I believe it'll work on other architectures and operating systems, but I haven't tried. The availability of a GUI web browser is important. [Do you know how to make it work on Windows?](https://github.com/hodgesmr/mastodon_digest/issues/13)
 
 ## A Matt Hodges project
 
