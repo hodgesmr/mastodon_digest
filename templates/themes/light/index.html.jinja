@@ -11,14 +11,23 @@
         <h1>Mastodon Digest</h1>
         {% include "debug-info.html.jinja" %}
 
-        <h2>Here are some popular posts you may have missed:</h2>
-        {% with posts=posts %}
-            {% include "posts.html.jinja" %}
-        {% endwith %}
-        <h2>Here are some popular boosts you may have missed:</h2>
-        {% with posts=boosts %}
-            {% include "posts.html.jinja" %}
-        {% endwith %}
+        <section class="posts">
+        {% if posts %}
+            <h2>Here are some popular posts you may have missed:</h2>
+            {% with posts=posts %}
+                {% include "posts.html.jinja" %}
+            {% endwith %}
+        {% endif %}
+        </section>
+
+        <section class="posts">
+        {% if boosts %}
+            <h2>Here are some popular boosts you may have missed:</h2>
+            {% with posts=boosts %}
+                {% include "posts.html.jinja" %}
+            {% endwith %}
+        {% endif %}
+        </section>
     </div>
 </body>
 </html>
