@@ -37,9 +37,9 @@ build:
 
 .EXPORT_ALL_VARIABLES:
 help:
-	docker run --env-file .env -it --rm -v "$(PWD)/render:${WORKDIR}/render" ${ORG}/${NAME} -h
+	docker run --env-file .env -it --rm -v "$(PWD)/render:${WORKDIR}/render" -v "$(PWD)/templates:${WORKDIR}/templates" ${ORG}/${NAME} -h
 
 .EXPORT_ALL_VARIABLES:
 run:
-	docker run --env-file .env -it --rm -v "$(PWD)/render:${WORKDIR}/render" ${ORG}/${NAME} ${FLAGS}
+	docker run --env-file .env -it --rm -v "$(PWD)/render:${WORKDIR}/render" -v "$(PWD)/templates:${WORKDIR}/templates" ${ORG}/${NAME} ${FLAGS}
 	python -m webbrowser -t "file://$(PWD)/render/index.html"
