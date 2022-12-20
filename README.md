@@ -146,6 +146,12 @@ Each post and boost is a `ScoredPost` object:
 * `get_home_url(mastodon_base_url)`: The URL of the post, translated to the `mastodon_base_url` instance provided.
 * `info` : The full underlying `status` dict for the post, [documented by mastodon.py here](https://mastodonpy.readthedocs.io/en/stable/02_return_values.html#status-dicts).
 
+When developing themes, you can run the digest in development mode, which uses theme files from the local filesystem rather than rebuilding the docker image every time you make a change:
+
+```sh
+make dev FLAGS="--theme my-theme"
+```
+
 ## What's missing?
 
 Probably many things!
