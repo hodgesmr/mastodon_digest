@@ -1,7 +1,7 @@
 <style>
 
     body {
-        background-color: #FAFAFA;
+        background-color: #fafafa;
         font-family: "Arial", sans-serif;
     }
 
@@ -10,6 +10,11 @@
         max-width: 640px;
         padding: 10px;
         text-align: center;
+        margin: 0 auto;
+    }
+
+    .posts {
+        align: center;
     }
 
     div.post {
@@ -36,32 +41,19 @@
         color: black;
     }
 
-    span#render-description {
+    .render-info {
         color: #333;
+        max-width: 640px;
     }
 
-    span#scorer {
-        color: #333;
+    .render-info summary {
+        cursor: pointer;
+        margin-bottom: 10px
     }
 
-    span#scorer-value {
+    .render-info-value {
         font-weight: bold;
-    }
-
-    span#threshold {
-        color: #333;
-    }
-
-    span#threshold-value {
-        font-weight: bold;
-    }
-
-    span#rendered-value {
-        font-weight: bold;
-    }
-
-    span#hours-value {
-        font-weight: bold;
+        margin-right: 5px;
     }
 
     iframe.mastodon-embed {
