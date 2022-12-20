@@ -135,7 +135,7 @@ The available view variables are:
 * `mastodon_base_url` : The base URL for this mastodon instance, as defined in env.
 * `rendered_at` : The time the digest was generated
 * `timeline_name` : The timeline used to generated the digest (e.g. home, local, hashtag:introductions)
-* `threshold` : Whether the `lax` threshold was applied
+* `threshold` : The threshold for scores included
 * `scorer` : The scoring method used
 
 Each post and boost is a `ScoredPost` object:
