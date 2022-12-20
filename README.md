@@ -74,23 +74,25 @@ python run.py -h
 ```
 usage: mastodon_digest [-h] [-f TIMELINE] [-n {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24}]
                        [-s {ExtendedSimple,ExtendedSimpleWeighted,Simple,SimpleWeighted}] [-t {lax,normal,strict}]
-                       [-o OUTPUT_DIR]
+                       [-o OUTPUT_DIR] [--theme {light,default}]
 
 options:
   -h, --help            show this help message and exit
-  -f TIMELINE           The timeline to summarize: Expects 'home', 'local' or 'federated', or 'list:id', 'hashtag:tag'. (default: home)
+  -f TIMELINE           The timeline to summarize: Expects 'home', 'local' or 'federated', or 'list:id', 'hashtag:tag' (default:
+                        home)
   -n {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24}
                         The number of hours to include in the Mastodon Digest (default: 12)
   -s {ExtendedSimple,ExtendedSimpleWeighted,Simple,SimpleWeighted}
-                        Which post scoring criteria to use. Simple scorers take a geometric
-                        mean of boosts and favs. Extended scorers include reply counts in
-                        the geometric mean. Weighted scorers multiply the score by an
-                        inverse square root of the author's followers, to reduce the
-                        influence of large accounts. (default: SimpleWeighted)
+                        Which post scoring criteria to use. Simple scorers take a geometric mean of boosts and favs. Extended
+                        scorers include reply counts in the geometric mean. Weighted scorers multiply the score by an inverse
+                        square root of the author's followers, to reduce the influence of large accounts. (default:
+                        SimpleWeighted)
   -t {lax,normal,strict}
                         Which post threshold criteria to use. lax = 90th percentile, normal = 95th percentile, strict = 98th
                         percentile (default: normal)
   -o OUTPUT_DIR         Output directory for the rendered digest (default: ./render/)
+  --theme {light,default}
+                        Named template theme with which to render the digest (default: default)
 ```
 
 If you are running with Docker and make, you can pass flags as:
@@ -118,6 +120,37 @@ make run FLAGS="-n 8 -s Simple -t lax"
     - `strict` : Posts must achive a score within the 98th percentile.
 
 I'm still experimenting with these, so it's possible that I change the defaults in the future.
+
+#### Theme Options
+
+Specify a render template theme with the `--theme <theme-name>` argument.
+
+Two basic templates for the digest are provided, `default` and `light`. You can create new templates by adding a directory to `templates/themes/my-theme/`. You must create `index.html.jinja` as the root template.
+
+Template fragments placed inside `themes/common/` can be re-used by any template, which is helpful to try and keep things DRY-er (for example, include `scripts.html.jinja` for the current version of the Mastodon iframe embed JavaScript.)
+
+The available view variables are:
+
+* `posts` : Array of posts to display
+* `boosts` : Array of boosts to display
+* `hours` : Hours rendered
+* `mastodon_base_url` : The base URL for this mastodon instance, as defined in env.
+* `rendered_at` : The time the digest was generated
+* `timeline_name` : The timeline used to generated the digest (e.g. home, local, hashtag:introductions)
+* `threshold` : The threshold for scores included
+* `scorer` : The scoring method used
+
+Each post and boost is a `ScoredPost` object:
+
+* `url` : The canonical URL of the post.
+* `get_home_url(mastodon_base_url)`: The URL of the post, translated to the `mastodon_base_url` instance provided.
+* `info` : The full underlying `status` dict for the post, [documented by mastodon.py here](https://mastodonpy.readthedocs.io/en/stable/02_return_values.html#status-dicts).
+
+When developing themes, you can run the digest in development mode, which uses theme files from the local filesystem rather than rebuilding the docker image every time you make a change:
+
+```sh
+make dev FLAGS="--theme my-theme"
+```
 
 ## What's missing?
 

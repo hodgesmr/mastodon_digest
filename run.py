@@ -19,13 +19,20 @@ if TYPE_CHECKING:
     from thresholds import Threshold
 
 
-def render_digest(context: dict, output_dir: Path) -> None:
-    environment = Environment(loader=FileSystemLoader("templates/"))
+def render_digest(context: dict, output_dir: Path, theme: str = "default") -> None:
+    environment = Environment(loader=FileSystemLoader([f"templates/themes/{theme}", "templates/common"]))
     template = environment.get_template("index.html.jinja")
     output_html = template.render(context)
     output_file_path = output_dir / "index.html"
     output_file_path.write_text(output_html)
 
+
+def list_themes() -> List[str]:
+    # Return themes, named by directory in `/templates/themes` and which have an `index.html.jinja` present.
+    return list(filter(
+        lambda dir_name: not dir_name.startswith('.') and os.path.exists(f"templates/themes/{dir_name}/index.html.jinja"),
+        os.listdir('templates/themes')
+    ))
 
 def format_base_url(mastodon_base_url: str) -> str:
     return mastodon_base_url.strip().rstrip("/")
@@ -40,6 +47,7 @@ def run(
     mastodon_username: str,
     timeline: str,
     output_dir: Path,
+    theme: str
 ) -> None:
 
     print(f"Building digest from the past {hours} hours...")
@@ -74,6 +82,7 @@ def run(
                 "scorer": scorer.get_name(),
             },
             output_dir=output_dir,
+            theme=theme
         )
 
 
@@ -130,6 +139,14 @@ if __name__ == "__main__":
         help="Output directory for the rendered digest",
         required=False,
     )
+    arg_parser.add_argument(
+        "--theme",
+        choices=list_themes(),
+        default="default",
+        dest="theme",
+        help="Named template theme with which to render the digest",
+        required=False,
+    )
     args = arg_parser.parse_args()
 
     # Attempt to validate the output directory
@@ -165,4 +182,5 @@ if __name__ == "__main__":
         mastodon_username,
         timeline,
         output_dir,
+        args.theme
     )
