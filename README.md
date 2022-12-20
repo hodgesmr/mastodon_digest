@@ -136,7 +136,7 @@ The available view variables are:
 * `rendered_at` : The time the digest was generated
 * `timeline_name` : The timeline used to generated the digest (e.g. home, local, hashtag:introductions)
 * `threshold` : Whether the `lax` threshold was applied
-* `scorer` : The scorer algorithm used
+* `scorer` : The scoring method used
 
 Each post and boost is a `ScoredPost` object:
 
