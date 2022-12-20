@@ -123,6 +123,8 @@ I'm still experimenting with these, so it's possible that I change the defaults 
 
 #### Theme Options
 
+Specify a render template theme with the `--theme <theme-name>` argument.
+
 Two basic templates for the digest are provided, `default` and `light`. You can create new templates by adding a directory to `templates/themes/my-theme/`. You must create `index.html.jinja` as the root template.
 
 Template fragments placed inside `themes/common/` can be re-used by any template, which is helpful to try and keep things DRY-er (for example, include `scripts.html.jinja` for the current version of the Mastodon iframe embed JavaScript.)
