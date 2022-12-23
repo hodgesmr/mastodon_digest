@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import dotenv
 import os
 import sys
 from datetime import datetime
@@ -18,6 +19,7 @@ if TYPE_CHECKING:
     from scorers import Scorer
     from thresholds import Threshold
 
+dotenv.load_dotenv()
 
 def render_digest(context: dict, output_dir: Path, theme: str = "default") -> None:
     environment = Environment(loader=FileSystemLoader([f"templates/themes/{theme}", "templates/common"]))
