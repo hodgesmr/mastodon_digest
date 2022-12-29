@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import dotenv
 import os
 import sys
 from datetime import datetime
@@ -161,6 +162,9 @@ if __name__ == "__main__":
     timelineType, *_ = timeline.split(":", 1)
     if not timelineType in validTimelineTypes:
         timeline = "home"
+
+    # load and validate env
+    dotenv.load_dotenv(override=False)
 
     mastodon_token = os.getenv("MASTODON_TOKEN")
     mastodon_base_url = os.getenv("MASTODON_BASE_URL")
