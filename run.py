@@ -164,7 +164,7 @@ if __name__ == "__main__":
         timeline = "home"
 
     # load and validate env
-    dotenv.load_dotenv()
+    dotenv.load_dotenv(override=False)
 
     mastodon_token = os.getenv("MASTODON_TOKEN")
     mastodon_base_url = os.getenv("MASTODON_BASE_URL")
