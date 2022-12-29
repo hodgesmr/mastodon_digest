@@ -8,7 +8,7 @@ This is a Python project that generates a digest of popular Mastodon posts from 
 
 You can run in [Docker](#docker) or in a [local python environment](#local). But first, set up your environment:
 
-Before you can run the tool locally, you need to copy [.env.example](./.env.example) to .env (which is ignored by git) and fill in the relevant environment variables:
+Before you can run the tool locally, you need to copy [.env.example](./.env.example) to `.env` (which is ignored by git) and fill in the relevant environment variables:
 
 ```sh
 cp .env.example .env
@@ -17,6 +17,8 @@ cp .env.example .env
  - `MASTODON_TOKEN` : This is your access token. You can generate one on your home instance under Preferences > Development. Your token only needs Read permissions.
  - `MASTODON_BASE_URL` : This is the protocol-aware URL of your Mastodon home instance. For example, if you are `@Gargron@mastodon.social`, then you would set `https://mastodon.social`.
  - `MASTODON_USERNAME`: This is your Mastodon account username on your home instance. For example, if you are `@Gargron@mastodon.social`, then you would set `Gargron`.
+
+Both the Docker container and the python script will construct the environment from the `.env` file. This is usually sufficient and you can stop here. However, you may **optionally** construct your environment manually. This is may be useful for deployed environments.
 
 ### Docker
 
@@ -39,14 +41,6 @@ make run FLAGS="-n 8 -s Simple -t lax"
 ```
 
 ### Local
-
-First, make sure you've set your environment variables:
-
-```sh
-set -a
-source .env
-set +a
-```
 
 From within your Python3 environment, simply:
 
