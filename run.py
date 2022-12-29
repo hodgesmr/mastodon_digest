@@ -19,7 +19,6 @@ if TYPE_CHECKING:
     from scorers import Scorer
     from thresholds import Threshold
 
-dotenv.load_dotenv()
 
 def render_digest(context: dict, output_dir: Path, theme: str = "default") -> None:
     environment = Environment(loader=FileSystemLoader([f"templates/themes/{theme}", "templates/common"]))
@@ -163,6 +162,9 @@ if __name__ == "__main__":
     timelineType, *_ = timeline.split(":", 1)
     if not timelineType in validTimelineTypes:
         timeline = "home"
+
+    # load and validate env
+    dotenv.load_dotenv()
 
     mastodon_token = os.getenv("MASTODON_TOKEN")
     mastodon_base_url = os.getenv("MASTODON_BASE_URL")
