@@ -24,13 +24,10 @@ class Threshold(Enum):
         """Returns a list of ScoredPosts that meet this Threshold with the given Scorer"""
 
         all_post_scores = [p.get_score(scorer) for p in posts]
+        min_score = stats.scoreatpercentile(all_post_scores, per=self.value)
         threshold_posts = [
-            p
-            for p in posts
-            if stats.percentileofscore(all_post_scores, p.get_score(scorer))
-            >= self.value
+            post for post, score in zip(posts, all_post_scores) if score >= min_score
         ]
-
         return threshold_posts
 
 
