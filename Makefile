@@ -1,4 +1,4 @@
-.PHONY: run help
+.PHONY: run help local dev
 
 VERSION := $(shell git describe --abbrev=0 --tags)
 BUILD_DATE := "$(shell date -u)"
@@ -61,6 +61,5 @@ $(PYTHON_BIN):
 	$(SYSTEM_PYTHON) -m venv $(VENV_DIR)
 	$(PYTHON_BIN) -m pip install -r requirements.txt
 
-.PHONY: local
 local: $(PYTHON_BIN)
 	$(PYTHON_BIN) run.py ${FLAGS}
