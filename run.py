@@ -21,7 +21,9 @@ if TYPE_CHECKING:
 
 
 def render_digest(context: dict, output_dir: Path, theme: str = "default") -> None:
-    environment = Environment(loader=FileSystemLoader([f"templates/themes/{theme}", "templates/common"]))
+    environment = Environment(
+        loader=FileSystemLoader([f"templates/themes/{theme}", "templates/common"])
+    )
     template = environment.get_template("index.html.jinja")
     output_html = template.render(context)
     output_file_path = output_dir / "index.html"
@@ -30,10 +32,14 @@ def render_digest(context: dict, output_dir: Path, theme: str = "default") -> No
 
 def list_themes() -> list[str]:
     # Return themes, named by directory in `/templates/themes` and which have an `index.html.jinja` present.
-    return list(filter(
-        lambda dir_name: not dir_name.startswith('.') and os.path.exists(f"templates/themes/{dir_name}/index.html.jinja"),
-        os.listdir('templates/themes')
-    ))
+    return list(
+        filter(
+            lambda dir_name: not dir_name.startswith(".")
+            and os.path.exists(f"templates/themes/{dir_name}/index.html.jinja"),
+            os.listdir("templates/themes"),
+        )
+    )
+
 
 def format_base_url(mastodon_base_url: str) -> str:
     return mastodon_base_url.strip().rstrip("/")
@@ -47,7 +53,7 @@ def run(
     mastodon_base_url: str,
     timeline: str,
     output_dir: Path,
-    theme: str
+    theme: str,
 ) -> None:
 
     print(f"Building digest from the past {hours} hours...")
@@ -65,8 +71,12 @@ def run(
     threshold_boosts = threshold.posts_meeting_criteria(boosts, scorer)
 
     # 3. Sort posts and boosts by score, descending
-    threshold_posts = sorted(threshold_posts, key=lambda post: post.get_score(scorer), reverse=True)
-    threshold_boosts = sorted(threshold_boosts, key=lambda post: post.get_score(scorer), reverse=True)
+    threshold_posts = sorted(
+        threshold_posts, key=lambda post: post.get_score(scorer), reverse=True
+    )
+    threshold_boosts = sorted(
+        threshold_boosts, key=lambda post: post.get_score(scorer), reverse=True
+    )
 
     # 4. Build the digest
     if len(threshold_posts) == 0 and len(threshold_boosts) == 0:
@@ -86,7 +96,7 @@ def run(
                 "scorer": scorer.get_name(),
             },
             output_dir=output_dir,
-            theme=theme
+            theme=theme,
         )
 
 
@@ -185,5 +195,5 @@ if __name__ == "__main__":
         format_base_url(mastodon_base_url),
         timeline,
         output_dir,
-        args.theme
+        args.theme,
     )
