@@ -6,7 +6,7 @@ VCS_REF := $(shell git log -1 --pretty=%h)
 NAME := $(shell pwd | xargs basename)
 VENDOR := "Matt Hodges"
 ORG := hodgesmr
-WORKDIR := "/opt/${NAME}"
+WORKDIR := /opt/${NAME}
 
 ifeq ($(shell which python3),)
 	PYTHON = python
