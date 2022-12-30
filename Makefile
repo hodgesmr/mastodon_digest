@@ -57,14 +57,6 @@ dev:
 	docker run --env-file .env -it --rm -v "$(PWD)/render:${WORKDIR}/render" -v "$(PWD)/templates:${WORKDIR}/templates" ${ORG}/${NAME} ${FLAGS}
 	python -m webbrowser -t "file://$(PWD)/render/index.html"
 
-# Running locally 
-# We optionally include our .env file if it exists (compatibility with the docker
-# --env-file) and then create a vitualenv as needed for running our local command.
-ifneq (,$(wildcard ./.env))
-    include .env
-    export
-endif
-
 $(PYTHON_BIN):
 	$(SYSTEM_PYTHON) -m venv $(VENV_DIR)
 	$(PYTHON_BIN) -m pip install -r requirements.txt
