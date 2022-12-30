@@ -21,7 +21,7 @@ COPY templates/ ./templates/
 COPY *.py ./
 
 # Moved down to end of file to avoid messing with the pip cache always being invalidated by the values
-# always changing between runs (especially BUILD_DATE which is essentially "now()")
+# changing between runs (especially BUILD_DATE which is essentially "now()")
 ARG BUILD_DATE
 ARG NAME
 ARG ORG
