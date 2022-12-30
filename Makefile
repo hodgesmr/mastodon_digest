@@ -90,11 +90,11 @@ help:
 
 .EXPORT_ALL_VARIABLES:
 run:
-	docker run --rm -it --env-file=.env -v "$(PWD)/render:${WORKDIR}/render" ${DOCKER_IMAGE}:${DOCKER_TAG} ${FLAGS} \
-	&& ${PYTHON} -m webbrowser -t "file://$(PWD)/render/index.html"
+	docker run --rm -it --env-file=.env -v "$(PWD)/render:${WORKDIR}/render" ${DOCKER_IMAGE}:${DOCKER_TAG} ${FLAGS}
+	${PYTHON} -m webbrowser -t "file://$(PWD)/render/index.html"
 
 .EXPORT_ALL_VARIABLES:
 dev:
 	@echo "Running with local development themes"
-	docker run --rm -it --env-file=.env -v "$(PWD)/render:${WORKDIR}/render" -v "$(PWD)/templates:${WORKDIR}/templates" ${DOCKER_IMAGE}:${DOCKER_TAG} ${FLAGS} \
-	&& ${PYTHON} -m webbrowser -t "file://$(PWD)/render/index.html"
+	docker run --rm -it --env-file=.env -v "$(PWD)/render:${WORKDIR}/render" -v "$(PWD)/templates:${WORKDIR}/templates" ${DOCKER_IMAGE}:${DOCKER_TAG} ${FLAGS}
+	${PYTHON} -m webbrowser -t "file://$(PWD)/render/index.html"
