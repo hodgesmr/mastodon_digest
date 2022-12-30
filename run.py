@@ -106,7 +106,6 @@ if __name__ == "__main__":
     )
     arg_parser.add_argument(
         "-n",
-        choices=range(1, 25),
         default=12,
         dest="hours",
         help="The number of hours to include in the Mastodon Digest",
