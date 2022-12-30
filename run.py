@@ -65,7 +65,11 @@ def run(
     threshold_posts = threshold.posts_meeting_criteria(posts, scorer)
     threshold_boosts = threshold.posts_meeting_criteria(boosts, scorer)
 
-    # 3. Build the digest
+    # 3. Sort the toots
+    thresholds_posts = sorted(threshold_posts, key=lambda post: post.get_score(scorer), reverse=True)
+    threshold_boosts = sorted(threshold_boosts, key=lambda post: post.get_score(scorer), reverse=True)
+
+    # 4. Build the digest
     if len(threshold_posts) == 0 and len(threshold_boosts) == 0:
         sys.exit(
             f"No posts or boosts were found for the provided digest arguments. Exiting."
