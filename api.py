@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 
 def fetch_posts_and_boosts(
-    hours: int, mastodon_client: Mastodon, mastodon_username: str, timeline: str
+    hours: int, mastodon_client: Mastodon, mastodon_username: str, timeline: str, lang: str
 ) -> tuple[list[ScoredPost], list[ScoredPost]]:
     """Fetches posts from the home timeline that the account hasn't interacted with"""
 
@@ -60,6 +60,9 @@ def fetch_posts_and_boosts(
             filtered_response = response
 
         for post in filtered_response:
+            if lang != "*" and post["language"] != lang:
+                continue
+
             total_posts_seen += 1
 
             boost = False
