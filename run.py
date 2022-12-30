@@ -65,7 +65,7 @@ def run(
     threshold_boosts = threshold.posts_meeting_criteria(boosts, scorer)
 
     # 3. Sort the toots
-    thresholds_posts = sorted(threshold_posts, key=lambda post: post.get_score(scorer), reverse=True)
+    threshold_posts = sorted(threshold_posts, key=lambda post: post.get_score(scorer), reverse=True)
     threshold_boosts = sorted(threshold_boosts, key=lambda post: post.get_score(scorer), reverse=True)
 
     # 4. Build the digest
