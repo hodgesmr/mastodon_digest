@@ -44,3 +44,4 @@ package-lock.json
 .env
 
 render/*.html
+.venv

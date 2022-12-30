@@ -1,4 +1,4 @@
-.PHONY: run help
+.PHONY: run help local dev
 
 VERSION?=$(shell git describe --abbrev=0 --tags)
 BUILD_DATE?="$(shell date -u)"
@@ -8,11 +8,19 @@ WORKDIR:=/opt/${NAME}
 VENDOR="Matt Hodges"
 ORG?=hodgesmr
 
+# For running locally. We default to a general python3 but depending on the
+# users environment they may need to specify which version to use. python3.9
+# is the lowest tested with.
 ifeq ($(shell which python3),)
-	PYTHON=python
+	SYSTEM_PYTHON?=python
 else
-	PYTHON=python3
+	SYSTEM_PYTHON?=python3
 endif
+
+VENV_DIR := .venv
+PYTHON_BIN := $(VENV_DIR)/bin/python
+
+DOCKER_SCAN_SUGGEST=false
 
 # Docker image name in format [user/repo]
 DOCKER_IMAGE?=${ORG}/${NAME}
@@ -66,7 +74,7 @@ print:
 	@echo VENDOR=${VENDOR}
 	@echo VERSION=${VERSION}
 	@echo WORKDIR=${WORKDIR}
-	@echo PYTHON=${PYTHON}
+	@echo SYSTEM_PYTHON=${SYSTEM_PYTHON}
 	@echo OPEN_AFTER_RUN=${OPEN_AFTER_RUN}
 	@echo FLAGS=${FLAGS}
 	@echo DOCKER_IMAGE=${DOCKER_PLATFORM}
@@ -112,5 +120,12 @@ dev:
 .EXPORT_ALL_VARIABLES:
 open:
 ifeq ($(OPEN_AFTER_RUN),true)
-	${PYTHON} -m webbrowser -t "file://$(PWD)/render/index.html"
+	${SYSTEM_PYTHON} -m webbrowser -t "file://$(PWD)/render/index.html"
 endif
+
+$(PYTHON_BIN):
+	$(SYSTEM_PYTHON) -m venv $(VENV_DIR)
+	$(PYTHON_BIN) -m pip install -r requirements.txt
+
+local: $(PYTHON_BIN)
+	$(PYTHON_BIN) run.py ${FLAGS}

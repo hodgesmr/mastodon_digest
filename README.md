@@ -16,7 +16,6 @@ cp .env.example .env
 
  - `MASTODON_TOKEN` : This is your access token. You can generate one on your home instance under Preferences > Development. Your token only needs Read permissions.
  - `MASTODON_BASE_URL` : This is the protocol-aware URL of your Mastodon home instance. For example, if you are `@Gargron@mastodon.social`, then you would set `https://mastodon.social`.
- - `MASTODON_USERNAME`: This is your Mastodon account username on your home instance. For example, if you are `@Gargron@mastodon.social`, then you would set `Gargron`.
 
 Both the Docker container and the python script will construct the environment from the `.env` file. This is usually sufficient and you can stop here. However, you may **optionally** construct your environment manually. This is may be useful for deployed environments.
 
@@ -42,19 +41,37 @@ make run FLAGS="-n 8 -s Simple -t lax"
 
 ### Local
 
-From within your Python3 environment, simply:
+Mastodon Digest has been tested to work on Python 3.9 and above.
+
+#### With Make
+
+If your system Python meets that, you can:
+
+```sh
+make local
+```
+
+You can also pass [command arguments](#command-arguments):
+
+```sh
+make local FLAGS="-n 8 -s Simple -t lax"
+```
+
+#### Manually
+
+Althernatively if you have a different Python 3.9 environment, you can:
 
 ```sh
 pip install -r requirements.txt
 ```
 
-You can immediately generate a Mastodon Digest with:
+Then generate a Mastodon Digest with:
 
 ```sh
 python run.py
 ```
 
-The digest is written to `render/index.html` by default. You can then view it with the browser of your choice.
+Through either method, the digest is written to `render/index.html` by default. You can then view it with the browser of your choice.
 
 
 ## Command arguments
