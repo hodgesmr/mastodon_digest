@@ -50,6 +50,8 @@ def fetch_posts_and_boosts(
     else:
         response = mastodon_client.timeline(min_id=start)
 
+    mastodon_acct = mastodon_client.me()['acct'].strip().lower()
+
     # Iterate over our timeline until we run out of posts or we hit the limit
     while response and total_posts_seen < TIMELINE_LIMIT:
 
@@ -68,8 +70,6 @@ def fetch_posts_and_boosts(
                 boost = True
 
             scored_post = ScoredPost(post)  # wrap the post data as a ScoredPost
-
-            mastodon_acct = mastodon_client.me()['acct'].strip().lower()
 
             if scored_post.url not in seen_post_urls:
                 # Apply our local filters
