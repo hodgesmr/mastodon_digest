@@ -9,7 +9,7 @@ WORKDIR $WORKDIR
 
 COPY requirements.txt .
 
-# Cache pip files between runs for faster runtime
+# Cache pip files between [docker buildx build] to speed things up
 RUN --mount=type=cache,id=pip-cache-${TARGETPLATFORM},target=/root/.cache \
       set -ex \
       && mkdir -p venv \
@@ -20,8 +20,8 @@ RUN --mount=type=cache,id=pip-cache-${TARGETPLATFORM},target=/root/.cache \
 COPY templates/ ./templates/
 COPY *.py ./
 
-# Moved down to end of file to avoid messing with the pip cache always being invalidated by the values
-# changing between runs (especially BUILD_DATE which is essentially "now()")
+# Moved down to end of file to avoid messing with the [pip] cache always being invalidated by the values
+# changing between runs (especially [BUILD_DATE] which is essentially "now()")
 ARG BUILD_DATE
 ARG NAME
 ARG ORG
