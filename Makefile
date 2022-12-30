@@ -8,6 +8,12 @@ VENDOR := "Matt Hodges"
 ORG := hodgesmr
 WORKDIR := "/opt/${NAME}"
 
+ifeq ($(shell which python3),)
+	PYTHON = python
+else
+	PYTHON = python3
+endif
+
 DOCKER_SCAN_SUGGEST=false
 
 FLAGS ?=
@@ -42,10 +48,10 @@ help:
 .EXPORT_ALL_VARIABLES:
 run:
 	docker run --env-file .env -it --rm -v "$(PWD)/render:${WORKDIR}/render" ${ORG}/${NAME} ${FLAGS}
-	python -m webbrowser -t "file://$(PWD)/render/index.html"
+	${PYTHON} -m webbrowser -t "file://$(PWD)/render/index.html"
 
 .EXPORT_ALL_VARIABLES:
 dev:
 	@echo "Running with local development themes"
 	docker run --env-file .env -it --rm -v "$(PWD)/render:${WORKDIR}/render" -v "$(PWD)/templates:${WORKDIR}/templates" ${ORG}/${NAME} ${FLAGS}
-	python -m webbrowser -t "file://$(PWD)/render/index.html"
+	${PYTHON} -m webbrowser -t "file://$(PWD)/render/index.html"
