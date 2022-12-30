@@ -71,4 +71,4 @@ $(PYTHON_BIN):
 
 .PHONY: local
 local: $(PYTHON_BIN)
-	$(PYTHON_BIN) run.py
+	$(PYTHON_BIN) run.py ${FLAGS}
