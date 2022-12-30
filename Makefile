@@ -1,4 +1,4 @@
-.PHONY: run help local dev open
+.PHONY: run help local dev open clean
 
 VERSION?=$(shell git describe --abbrev=0 --tags)
 BUILD_DATE?="$(shell date -u)"
@@ -144,3 +144,10 @@ $(PYTHON_BIN):
 # Run [mastodon_digest] locally (requires python installed)
 local: $(PYTHON_BIN)
 	$(PYTHON_BIN) run.py ${FLAGS}
+
+# Clean the project of temp files (excluding [.env])
+#
+# [-d] = remove whole directories
+# [-x] = remove ignored files
+clean:
+	git clean --force -dx --exclude .env
