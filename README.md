@@ -66,27 +66,21 @@ python run.py -h
 ```
 
 ```
-usage: mastodon_digest [-h] [-f TIMELINE] [-n {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24}]
-                       [-s {ExtendedSimple,ExtendedSimpleWeighted,Simple,SimpleWeighted}] [-t {lax,normal,strict}]
-                       [-o OUTPUT_DIR] [--theme {light,default}]
+usage: mastodon_digest [-h] [-f TIMELINE] [-n HOURS] [-s {ExtendedSimple,ExtendedSimpleWeighted,Simple,SimpleWeighted}] [-t {lax,normal,strict}] [-o OUTPUT_DIR] [--theme {light,default}] [-l LANG]
 
 options:
   -h, --help            show this help message and exit
-  -f TIMELINE           The timeline to summarize: Expects 'home', 'local' or 'federated', or 'list:id', 'hashtag:tag' (default:
-                        home)
-  -n {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24}
-                        The number of hours to include in the Mastodon Digest (default: 12)
+  -f TIMELINE           The timeline to summarize: Expects 'home', 'local' or 'federated', or 'list:id', 'hashtag:tag' (default: home)
+  -n HOURS              The number of hours to include in the Mastodon Digest (default: 12)
   -s {ExtendedSimple,ExtendedSimpleWeighted,Simple,SimpleWeighted}
-                        Which post scoring criteria to use. Simple scorers take a geometric mean of boosts and favs. Extended
-                        scorers include reply counts in the geometric mean. Weighted scorers multiply the score by an inverse
-                        square root of the author's followers, to reduce the influence of large accounts. (default:
-                        SimpleWeighted)
+                        Which post scoring criteria to use. Simple scorers take a geometric mean of boosts and favs. Extended scorers include reply counts in the geometric mean. Weighted scorers
+                        multiply the score by an inverse square root of the author's followers, to reduce the influence of large accounts. (default: SimpleWeighted)
   -t {lax,normal,strict}
-                        Which post threshold criteria to use. lax = 90th percentile, normal = 95th percentile, strict = 98th
-                        percentile (default: normal)
+                        Which post threshold criteria to use. lax = 90th percentile, normal = 95th percentile, strict = 98th percentile (default: normal)
   -o OUTPUT_DIR         Output directory for the rendered digest (default: ./render/)
   --theme {light,default}
                         Named template theme with which to render the digest (default: default)
+  -l LANG               Language to filter for (default: *)
 ```
 
 If you are running with Docker and make, you can pass flags as:
@@ -96,6 +90,7 @@ make run FLAGS="-n 8 -s Simple -t lax"
 ```
 
 #### Algorithm Options
+
  * `-f` : Timeline feed to source from. **home** is the default.
     - `home` : Your home timeline.
     - `local` : The local timeline for your instance; all the posts from users in an instance. This is more useful on small/medium-sized instances. Consider using a much smaller value for `-n` to limit the number of posts analysed.

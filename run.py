@@ -96,6 +96,7 @@ if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser(
         prog="mastodon_digest",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        exit_on_error=True,
     )
     arg_parser.add_argument(
         "-f",  # for "feed" since t-for-timeline is taken
