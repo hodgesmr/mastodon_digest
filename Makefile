@@ -35,9 +35,11 @@ DOCKER_PUSH?=false
 # See: https://docs.docker.com/engine/reference/commandline/buildx_build/#load
 DOCKER_LOAD?=true
 
-# Allow multi-arch builds of the container by setting [DOCKER_PLATFORM=linux/amd64,linux/arm64] for example
+# Allow multi-arch builds of the container by setting [DOCKER_PLATFORM=linux/amd64,linux/arm64]
 #
-# NOTE: use [DOCKER_LOAD=false] when using multi-arch, Docker can't import these manifests
+# We default to [linux] which automatically picks the correct CPU architecture from the Docker client.
+#
+# ! Use [DOCKER_LOAD=false] when using multi-arch - Docker can't import these manifests.
 #
 # See: https://docs.docker.com/engine/reference/commandline/buildx_build/#platform
 # See: https://docs.docker.com/engine/reference/builder/#from
