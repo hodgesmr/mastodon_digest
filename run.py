@@ -64,7 +64,7 @@ def run(
     threshold_posts = threshold.posts_meeting_criteria(posts, scorer)
     threshold_boosts = threshold.posts_meeting_criteria(boosts, scorer)
 
-    # 3. Sort the toots
+    # 3. Sort posts and boosts by score, descending
     threshold_posts = sorted(threshold_posts, key=lambda post: post.get_score(scorer), reverse=True)
     threshold_boosts = sorted(threshold_boosts, key=lambda post: post.get_score(scorer), reverse=True)
 
