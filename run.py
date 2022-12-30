@@ -194,7 +194,7 @@ if __name__ == "__main__":
     run(
         args.hours,
         scorers[args.scorer](),
-        consolidate,
+        args.consolidate,
         get_threshold_from_name(args.threshold),
         mastodon_token,
         format_base_url(mastodon_base_url),
