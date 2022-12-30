@@ -1,4 +1,4 @@
-.PHONY: run help local dev
+.PHONY: run help local dev open
 
 VERSION?=$(shell git describe --abbrev=0 --tags)
 BUILD_DATE?="$(shell date -u)"
@@ -100,30 +100,42 @@ build:
 	--build-arg ORG=${ORG} \
 	--build-arg WORKDIR=${WORKDIR}
 
+# Show the [mastodon_digest] help output and exit
 .EXPORT_ALL_VARIABLES:
 help:
-	@$(MAKE) run FLAGS="-h" OPEN_AFTER_RUN=false
+	@$(MAKE) run FLAGS="-h" OPEN_AFTER_RUN=false DOCKER_RUN_FLAGS=""
 
+# Run the [mastodon_digest] command in Docker and write the rendered HTML into [render/index.html]
+#
+# Use [FLAGS] environment variable to provide command flags to [mastodon_digest]
 .EXPORT_ALL_VARIABLES:
 run:
 	docker run --rm -it ${DOCKER_RUN_FLAGS} -v "$(PWD)/render:${WORKDIR}/render" ${DOCKER_IMAGE}:${DOCKER_TAG} ${FLAGS}
 	@$(MAKE) open
 
+# Same as [make run], but the templates/ files are provided via Docker volume rather than being baked into the Docker image
+#
+# This is convinient for iterating on the templates without doing [make build && make run] if you're only tweaking teamplates
 .EXPORT_ALL_VARIABLES:
 dev:
 	@echo "Running with local development themes"
 	docker run --rm -it ${DOCKER_RUN_FLAGS} -v "$(PWD)/render:${WORKDIR}/render" -v "$(PWD)/templates:${WORKDIR}/templates" ${DOCKER_IMAGE}:${DOCKER_TAG} ${FLAGS}
 	@$(MAKE) open
 
+# Open the renderer output in the browser
+#
+# use [OPEN_AFTER_RUN=false] to disable this behavior
 .EXPORT_ALL_VARIABLES:
 open:
 ifeq ($(OPEN_AFTER_RUN),true)
 	${SYSTEM_PYTHON} -m webbrowser -t "file://$(PWD)/render/index.html"
 endif
 
+# Create local environment via [venv] for running [mastodon_digest]
 $(PYTHON_BIN):
 	$(SYSTEM_PYTHON) -m venv $(VENV_DIR)
 	$(PYTHON_BIN) -m pip install -r requirements.txt
 
+# Run [mastodon_digest] locally (requires python installed)
 local: $(PYTHON_BIN)
 	$(PYTHON_BIN) run.py ${FLAGS}
