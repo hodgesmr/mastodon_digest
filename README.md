@@ -16,7 +16,6 @@ cp .env.example .env
 
  - `MASTODON_TOKEN` : This is your access token. You can generate one on your home instance under Preferences > Development. Your token only needs Read permissions.
  - `MASTODON_BASE_URL` : This is the protocol-aware URL of your Mastodon home instance. For example, if you are `@Gargron@mastodon.social`, then you would set `https://mastodon.social`.
- - `MASTODON_USERNAME`: This is your Mastodon account username on your home instance. For example, if you are `@Gargron@mastodon.social`, then you would set `Gargron`.
 
 Both the Docker container and the python script will construct the environment from the `.env` file. This is usually sufficient and you can stop here. However, you may **optionally** construct your environment manually. This is may be useful for deployed environments.
 

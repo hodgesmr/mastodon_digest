@@ -45,7 +45,6 @@ def run(
     threshold: Threshold,
     mastodon_token: str,
     mastodon_base_url: str,
-    mastodon_username: str,
     timeline: str,
     output_dir: Path,
     theme: str
@@ -59,7 +58,7 @@ def run(
     )
 
     # 1. Fetch all the posts and boosts from our home timeline that we haven't interacted with
-    posts, boosts = fetch_posts_and_boosts(hours, mst, mastodon_username, timeline)
+    posts, boosts = fetch_posts_and_boosts(hours, mst, timeline)
 
     # 2. Score them, and return those that meet our threshold
     threshold_posts = threshold.posts_meeting_criteria(posts, scorer)
@@ -168,14 +167,11 @@ if __name__ == "__main__":
 
     mastodon_token = os.getenv("MASTODON_TOKEN")
     mastodon_base_url = os.getenv("MASTODON_BASE_URL")
-    mastodon_username = os.getenv("MASTODON_USERNAME")
 
     if not mastodon_token:
         sys.exit("Missing environment variable: MASTODON_TOKEN")
     if not mastodon_base_url:
         sys.exit("Missing environment variable: MASTODON_BASE_URL")
-    if not mastodon_username:
-        sys.exit("Missing environment variable: MASTODON_USERNAME")
 
     run(
         args.hours,
@@ -183,7 +179,6 @@ if __name__ == "__main__":
         get_threshold_from_name(args.threshold),
         mastodon_token,
         format_base_url(mastodon_base_url),
-        mastodon_username,
         timeline,
         output_dir,
         args.theme
