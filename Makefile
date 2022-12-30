@@ -82,9 +82,11 @@ print:
 	@echo DOCKER_LOAD=${DOCKER_LOAD}
 	@echo DOCKER_PUSH=${DOCKER_PUSH}
 
-# [docker buildx] is included in [Docker Desktop] and DEB/RPM installations of Docker on Linux by default
+# [docker buildx] is included in [Docker Desktop] and DEB/RPM installations of Docker on Linux by default since
+# Docker [19.03.0] released [2019-07-22]
 #
 # See: https://github.com/docker/buildx#installing
+# See: https://docs.docker.com/engine/release-notes/19.03/#19030
 .EXPORT_ALL_VARIABLES:
 build:
 	docker buildx build \
