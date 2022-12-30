@@ -42,6 +42,7 @@ def format_base_url(mastodon_base_url: str) -> str:
 def run(
     hours: int,
     scorer: Scorer,
+    consolidate: bool,
     threshold: Threshold,
     mastodon_token: str,
     mastodon_base_url: str,
@@ -65,6 +66,10 @@ def run(
     threshold_posts = threshold.posts_meeting_criteria(posts, scorer)
     threshold_boosts = threshold.posts_meeting_criteria(boosts, scorer)
 
+    if consolidate:
+        threshold_post = threshold_posts + threshold_boosts
+        threshold_boosts = []
+
     # 3. Build the digest
     if len(threshold_posts) == 0 and len(threshold_boosts) == 0:
         sys.exit(
@@ -74,6 +79,7 @@ def run(
         render_digest(
             context={
                 "hours": hours,
+                "consolidate": consolidate,
                 "posts": threshold_posts,
                 "boosts": threshold_boosts,
                 "mastodon_base_url": mastodon_base_url,
@@ -94,6 +100,14 @@ if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser(
         prog="mastodon_digest",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    arg_parser.add_argument(
+        "-c",
+        default=False,
+        action=argparse.BooleanOptionalAction,
+        dest="consolidate",
+        help="Consolidate popular posts with popular boosts.",
+        required=False,
     )
     arg_parser.add_argument(
         "-f",  # for "feed" since t-for-timeline is taken
@@ -180,6 +194,7 @@ if __name__ == "__main__":
     run(
         args.hours,
         scorers[args.scorer](),
+        consolidate,
         get_threshold_from_name(args.threshold),
         mastodon_token,
         format_base_url(mastodon_base_url),
