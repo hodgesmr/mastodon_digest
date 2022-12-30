@@ -42,19 +42,37 @@ make run FLAGS="-n 8 -s Simple -t lax"
 
 ### Local
 
-From within your Python3 environment, simply:
+Mastodon Digest has been tested to work on Python 3.9 and above.
+
+#### With Make
+
+If your system Python meets that, you can:
+
+```sh
+make local
+```
+
+You can also pass [command arguments](#command-arguments):
+
+```sh
+make local FLAGS="-n 8 -s Simple -t lax"
+```
+
+#### Manually
+
+Althernatively if you have a different Python 3.9 environment, you can:
 
 ```sh
 pip install -r requirements.txt
 ```
 
-You can immediately generate a Mastodon Digest with:
+Then generate a Mastodon Digest with:
 
 ```sh
 python run.py
 ```
 
-The digest is written to `render/index.html` by default. You can then view it with the browser of your choice.
+Through either method, the digest is written to `render/index.html` by default. You can then view it with the browser of your choice.
 
 
 ## Command arguments
