@@ -28,7 +28,7 @@ def render_digest(context: dict, output_dir: Path, theme: str = "default") -> No
     output_file_path.write_text(output_html)
 
 
-def list_themes() -> List[str]:
+def list_themes() -> list[str]:
     # Return themes, named by directory in `/templates/themes` and which have an `index.html.jinja` present.
     return list(filter(
         lambda dir_name: not dir_name.startswith('.') and os.path.exists(f"templates/themes/{dir_name}/index.html.jinja"),
