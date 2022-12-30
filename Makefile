@@ -45,6 +45,14 @@ DOCKER_LOAD?=true
 # See: https://docs.docker.com/engine/reference/builder/#from
 DOCKER_PLATFORM?=linux
 
+# Additional [docker run] CLI flags - *NOT* to be confused with [FLAGS] for [mastodon_digest] CLI flags directly
+#
+# [--rm -it -v] is already taken care of
+DOCKER_RUN_FLAGS?=--env-file=.env
+
+# Open browser after [make run] or [make dev] rendering complete successfully
+OPEN_AFTER_RUN=true
+
 # CLI flags passed to the container command-line in [make dev] and [make run]
 #
 # Use [FLAGS=-h make run] to see options
@@ -59,8 +67,10 @@ print:
 	@echo VERSION=${VERSION}
 	@echo WORKDIR=${WORKDIR}
 	@echo PYTHON=${PYTHON}
+	@echo OPEN_AFTER_RUN=${OPEN_AFTER_RUN}
 	@echo FLAGS=${FLAGS}
 	@echo DOCKER_IMAGE=${DOCKER_PLATFORM}
+	@echo DOCKER_RUN_FLAGS=${DOCKER_RUN_FLAGS}
 	@echo DOCKER_TAG=${DOCKER_TAG}
 	@echo DOCKER_PLATFORM=${DOCKER_PLATFORM}
 	@echo DOCKER_LOAD=${DOCKER_LOAD}
@@ -86,15 +96,21 @@ build:
 
 .EXPORT_ALL_VARIABLES:
 help:
-	docker run --rm  -it --env-file=.env -v "$(PWD)/render:${WORKDIR}/render" ${DOCKER_IMAGE} -h
+	@$(MAKE) run FLAGS="-h" OPEN_AFTER_RUN=false
 
 .EXPORT_ALL_VARIABLES:
 run:
-	docker run --rm -it --env-file=.env -v "$(PWD)/render:${WORKDIR}/render" ${DOCKER_IMAGE}:${DOCKER_TAG} ${FLAGS}
-	${PYTHON} -m webbrowser -t "file://$(PWD)/render/index.html"
+	docker run --rm -it ${DOCKER_RUN_FLAGS} -v "$(PWD)/render:${WORKDIR}/render" ${DOCKER_IMAGE}:${DOCKER_TAG} ${FLAGS}
+	@$(MAKE) open
 
 .EXPORT_ALL_VARIABLES:
 dev:
 	@echo "Running with local development themes"
-	docker run --rm -it --env-file=.env -v "$(PWD)/render:${WORKDIR}/render" -v "$(PWD)/templates:${WORKDIR}/templates" ${DOCKER_IMAGE}:${DOCKER_TAG} ${FLAGS}
+	docker run --rm -it ${DOCKER_RUN_FLAGS} -v "$(PWD)/render:${WORKDIR}/render" -v "$(PWD)/templates:${WORKDIR}/templates" ${DOCKER_IMAGE}:${DOCKER_TAG} ${FLAGS}
+	@$(MAKE) open
+
+.EXPORT_ALL_VARIABLES:
+open:
+ifeq ($(OPEN_AFTER_RUN),true)
 	${PYTHON} -m webbrowser -t "file://$(PWD)/render/index.html"
+endif
