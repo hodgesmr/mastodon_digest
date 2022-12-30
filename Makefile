@@ -45,7 +45,9 @@ DOCKER_LOAD?=true
 # See: https://docs.docker.com/engine/reference/builder/#from
 DOCKER_PLATFORM?=linux
 
-# CLI flags passed to the container runtime
+# CLI flags passed to the container command-line in [make dev] and [make run]
+#
+# Use [FLAGS=-h make run] to see options
 FLAGS?=
 
 print:
@@ -56,7 +58,13 @@ print:
 	@echo VENDOR=${VENDOR}
 	@echo VERSION=${VERSION}
 	@echo WORKDIR=${WORKDIR}
-	@echo USER_OPTIONS=${USER_OPTIONS}
+	@echo PYTHON=${PYTHON}
+	@echo FLAGS=${FLAGS}
+	@echo DOCKER_IMAGE=${DOCKER_PLATFORM}
+	@echo DOCKER_TAG=${DOCKER_TAG}
+	@echo DOCKER_PLATFORM=${DOCKER_PLATFORM}
+	@echo DOCKER_LOAD=${DOCKER_LOAD}
+	@echo DOCKER_PUSH=${DOCKER_PUSH}
 
 .EXPORT_ALL_VARIABLES:
 build:
