@@ -14,24 +14,33 @@ else
 	PYTHON=python3
 endif
 
-# hide [Use 'docker scan' to run Snyk tests against images to find vulnerabilities and learn how to fix them] output
-DOCKER_SCAN_SUGGEST?=false
-
-# push to registry on build?
-DOCKER_PUSH?=false
-
-# import to local docker on build?
-DOCKER_LOAD?=true
-
-# image name in format [user/repo]
+# Docker image name in format [user/repo]
 DOCKER_IMAGE?=${ORG}/${NAME}
 
-# named tag (in addition to the [$VERSION] tag)
+# Docker tag in addition to the [$VERSION] tag
 DOCKER_TAG?=latest
 
-# allow multi-arch builds of the container by setting [DOCKER_PLATFORM=linux/amd64,linux/arm64] for example
+# hide [Use 'docker scan' to run Snyk tests against images to find vulnerabilities and learn how to fix them] output
+#
+# See: https://github.com/docker/scan-cli-plugin/issues/149#issuecomment-823969364
+DOCKER_SCAN_SUGGEST?=false
+
+# [docker push] to registry after [docker build]?
+#
+# See: https://docs.docker.com/engine/reference/commandline/buildx_build/#push
+DOCKER_PUSH?=false
+
+# Import built image into local Docker daemon? Needed for [docker run] when using buildx
+#
+# See: https://docs.docker.com/engine/reference/commandline/buildx_build/#load
+DOCKER_LOAD?=true
+
+# Allow multi-arch builds of the container by setting [DOCKER_PLATFORM=linux/amd64,linux/arm64] for example
 #
 # NOTE: use [DOCKER_LOAD=false] when using multi-arch, Docker can't import these manifests
+#
+# See: https://docs.docker.com/engine/reference/commandline/buildx_build/#platform
+# See: https://docs.docker.com/engine/reference/builder/#from
 DOCKER_PLATFORM?=linux
 
 # CLI flags passed to the container runtime
