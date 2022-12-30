@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 
 def fetch_posts_and_boosts(
-    hours: int, mastodon_client: Mastodon, mastodon_username: str, timeline: str
+    hours: int, mastodon_client: Mastodon, timeline: str
 ) -> tuple[list[ScoredPost], list[ScoredPost]]:
     """Fetches posts from the home timeline that the account hasn't interacted with"""
 
@@ -69,6 +69,8 @@ def fetch_posts_and_boosts(
 
             scored_post = ScoredPost(post)  # wrap the post data as a ScoredPost
 
+            mastodon_acct = mastodon_client.me()['acct'].strip().lower()
+
             if scored_post.url not in seen_post_urls:
                 # Apply our local filters
                 # Basically ignore my posts or posts I've interacted with
@@ -76,7 +78,7 @@ def fetch_posts_and_boosts(
                     not scored_post.info["reblogged"]
                     and not scored_post.info["favourited"]
                     and not scored_post.info["bookmarked"]
-                    and scored_post.info["account"]["acct"].strip().lower() != mastodon_username.strip().lower()
+                    and scored_post.info["account"]["acct"].strip().lower() != mastodon_acct
                 ):
                     # Append to either the boosts list or the posts lists
                     if boost:
