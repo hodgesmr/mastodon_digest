@@ -7,7 +7,7 @@
 
     div#container {
         margin: auto;
-        max-width: 640px;
+        max-width: 100%;
         padding: 10px;
         text-align: center;
         margin: 0 auto;
@@ -15,10 +15,14 @@
 
     .posts {
         align: center;
+        display: flex;
+        flex-wrap: wrap;
     }
 
     div.post {
         margin-top: 20px;
+        margin-right: 20px;
+        min-width: fit-content;
     }
 
     h1 {
