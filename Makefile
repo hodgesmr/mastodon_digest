@@ -20,8 +20,6 @@ endif
 VENV_DIR := .venv
 PYTHON_BIN := $(VENV_DIR)/bin/python
 
-DOCKER_SCAN_SUGGEST=false
-
 # Docker image name in format [user/repo]
 DOCKER_IMAGE?=${ORG}/${NAME}
 
