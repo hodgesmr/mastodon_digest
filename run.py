@@ -21,19 +21,25 @@ if TYPE_CHECKING:
 
 
 def render_digest(context: dict, output_dir: Path, theme: str = "default") -> None:
-    environment = Environment(loader=FileSystemLoader([f"templates/themes/{theme}", "templates/common"]))
+    environment = Environment(
+        loader=FileSystemLoader([f"templates/themes/{theme}", "templates/common"])
+    )
     template = environment.get_template("index.html.jinja")
     output_html = template.render(context)
     output_file_path = output_dir / "index.html"
     output_file_path.write_text(output_html)
 
 
-def list_themes() -> List[str]:
+def list_themes() -> list[str]:
     # Return themes, named by directory in `/templates/themes` and which have an `index.html.jinja` present.
-    return list(filter(
-        lambda dir_name: not dir_name.startswith('.') and os.path.exists(f"templates/themes/{dir_name}/index.html.jinja"),
-        os.listdir('templates/themes')
-    ))
+    return list(
+        filter(
+            lambda dir_name: not dir_name.startswith(".")
+            and os.path.exists(f"templates/themes/{dir_name}/index.html.jinja"),
+            os.listdir("templates/themes"),
+        )
+    )
+
 
 def format_base_url(mastodon_base_url: str) -> str:
     return mastodon_base_url.strip().rstrip("/")
@@ -46,10 +52,9 @@ def run(
     threshold: Threshold,
     mastodon_token: str,
     mastodon_base_url: str,
-    mastodon_username: str,
     timeline: str,
     output_dir: Path,
-    theme: str
+    theme: str,
 ) -> None:
 
     print(f"Building digest from the past {hours} hours...")
@@ -60,7 +65,7 @@ def run(
     )
 
     # 1. Fetch all the posts and boosts from our home timeline that we haven't interacted with
-    posts, boosts = fetch_posts_and_boosts(hours, mst, mastodon_username, timeline)
+    posts, boosts = fetch_posts_and_boosts(hours, mst, timeline)
 
     # 2. Score them, and return those that meet our threshold
     threshold_posts = threshold.posts_meeting_criteria(posts, scorer)
@@ -70,7 +75,16 @@ def run(
         threshold_posts = threshold_posts + threshold_boosts
         threshold_boosts = []
 
-    # 3. Build the digest
+
+    # 3. Sort posts and boosts by score, descending
+    threshold_posts = sorted(
+        threshold_posts, key=lambda post: post.get_score(scorer), reverse=True
+    )
+    threshold_boosts = sorted(
+        threshold_boosts, key=lambda post: post.get_score(scorer), reverse=True
+    )
+
+    # 4. Build the digest
     if len(threshold_posts) == 0 and len(threshold_boosts) == 0:
         sys.exit(
             f"No posts or boosts were found for the provided digest arguments. Exiting."
@@ -89,7 +103,7 @@ def run(
                 "scorer": scorer.get_name(),
             },
             output_dir=output_dir,
-            theme=theme
+            theme=theme,
         )
 
 
@@ -182,14 +196,11 @@ if __name__ == "__main__":
 
     mastodon_token = os.getenv("MASTODON_TOKEN")
     mastodon_base_url = os.getenv("MASTODON_BASE_URL")
-    mastodon_username = os.getenv("MASTODON_USERNAME")
 
     if not mastodon_token:
         sys.exit("Missing environment variable: MASTODON_TOKEN")
     if not mastodon_base_url:
         sys.exit("Missing environment variable: MASTODON_BASE_URL")
-    if not mastodon_username:
-        sys.exit("Missing environment variable: MASTODON_USERNAME")
 
     run(
         args.hours,
@@ -198,8 +209,7 @@ if __name__ == "__main__":
         get_threshold_from_name(args.threshold),
         mastodon_token,
         format_base_url(mastodon_base_url),
-        mastodon_username,
         timeline,
         output_dir,
-        args.theme
+        args.theme,
     )
