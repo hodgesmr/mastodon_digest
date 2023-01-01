@@ -89,6 +89,7 @@ usage: mastodon_digest [-h] [-f TIMELINE] [-n {1,2,3,4,5,6,7,8,9,10,11,12,13,14,
 
 options:
   -h, --help            show this help message and exit
+  -c                    Consolidate popular posts with popular boosts. (default: False)
   -f TIMELINE           The timeline to summarize: Expects 'home', 'local' or 'federated', or 'list:id', 'hashtag:tag' (default:
                         home)
   -n {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24}
@@ -113,7 +114,9 @@ make run FLAGS="-n 8 -s Simple -t lax"
 ```
 
 #### Algorithm Options
- * `-f` : Timeline feed to source from. **home** is the default.
+* `-c` : Consolidate the posts and boosts from the timeline in the presentation.
+  When enabled, the posts and boosts would be scored against each other. **False** is the default.
+* `-f` : Timeline feed to source from. **home** is the default.
     - `home` : Your home timeline.
     - `local` : The local timeline for your instance; all the posts from users in an instance. This is more useful on small/medium-sized instances. Consider using a much smaller value for `-n` to limit the number of posts analysed.
     - `federated` : The federated public timeline on your instance; all posts that your instance has seen. This is useful for discovering posts on very small or personal instances.
