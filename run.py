@@ -67,7 +67,7 @@ def run(
     threshold_boosts = threshold.posts_meeting_criteria(boosts, scorer)
 
     if consolidate:
-        threshold_post = threshold_posts + threshold_boosts
+        threshold_posts = threshold_posts + threshold_boosts
         threshold_boosts = []
 
     # 3. Build the digest
