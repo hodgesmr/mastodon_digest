@@ -36,7 +36,7 @@ make run
 You can also pass [command arguments](#command-arguments):
 
 ```sh
-make run FLAGS="-n 8 -s Simple -t lax"
+make run FLAGS="-n 8 -s ExtendedSimpleWeighted -t lax"
 ```
 
 ### Local
@@ -54,7 +54,7 @@ make local
 You can also pass [command arguments](#command-arguments):
 
 ```sh
-make local FLAGS="-n 8 -s Simple -t lax"
+make local FLAGS="-n 8 -s ExtendedSimpleWeighted -t lax"
 ```
 
 #### Manually
@@ -109,7 +109,7 @@ options:
 If you are running with Docker and make, you can pass flags as:
 
 ```sh
-make run FLAGS="-n 8 -s Simple -t lax"
+make run FLAGS="-n 8 -s ExtendedSimpleWeighted -t lax"
 ```
 
 #### Algorithm Options
