@@ -74,11 +74,14 @@ def fetch_posts_and_boosts(
             if scored_post.url not in seen_post_urls:
                 # Apply our local filters
                 # Basically ignore my posts or posts I've interacted with
+                # and ignore posts from accounts that have "#noindex" or "#nobot"
                 if (
                     not scored_post.info["reblogged"]
                     and not scored_post.info["favourited"]
                     and not scored_post.info["bookmarked"]
                     and scored_post.info["account"]["acct"].strip().lower() != mastodon_acct
+                    and "#noindex" not in scored_post.info["account"]["note"].lower()
+                    and "#nobot" not in scored_post.info["account"]["note"].lower()
                 ):
                     # Append to either the boosts list or the posts lists
                     if boost:
