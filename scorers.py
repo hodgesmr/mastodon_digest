@@ -28,8 +28,8 @@ class UniformWeight(Weight):
 class InverseFollowerWeight(Weight):
     @classmethod
     def weight(cls, scored_post: ScoredPost) -> InverseFollowerWeight:
-        # Zero out posts by accounts with zero followers that somehow made it to my feed
-        if scored_post.info["account"]["followers_count"] == 0:
+        # Zero out posts by accounts with zero followers (it happens), or less (count is -1 when the followers count is hidden)
+        if scored_post.info["account"]["followers_count"] <= 0:
             weight = 0
         else:
             # inversely weight against how big the account is
