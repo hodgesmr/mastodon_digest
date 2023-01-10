@@ -58,8 +58,8 @@ class SimpleScorer(UniformWeight, Scorer):
             # Inflate every value by 1
             metric_average = stats.gmean(
                 [
-                    scored_post.info["reblogs_count"]+1,
-                    scored_post.info["favourites_count"]+1,
+                    scored_post.info["reblogs_count"] + 1,
+                    scored_post.info["favourites_count"] + 1,
                 ]
             )
         else:
@@ -76,15 +76,19 @@ class SimpleWeightedScorer(InverseFollowerWeight, SimpleScorer):
 class ExtendedSimpleScorer(UniformWeight, Scorer):
     @classmethod
     def score(cls, scored_post: ScoredPost) -> ExtendedSimpleScorer:
-        if scored_post.info["reblogs_count"] or scored_post.info["favourites_count"] or scored_post.info["replies_count"]:
+        if (
+            scored_post.info["reblogs_count"]
+            or scored_post.info["favourites_count"]
+            or scored_post.info["replies_count"]
+        ):
             # If there's at least one metric
             # We don't want zeros in other metrics to multiply that out
             # Inflate every value by 1
             metric_average = stats.gmean(
                 [
-                    scored_post.info["reblogs_count"]+1,
-                    scored_post.info["favourites_count"]+1,
-                    scored_post.info["replies_count"]+1,
+                    scored_post.info["reblogs_count"] + 1,
+                    scored_post.info["favourites_count"] + 1,
+                    scored_post.info["replies_count"] + 1,
                 ],
             )
         else:
