@@ -54,6 +54,7 @@ def run(
     timeline: str,
     output_dir: Path,
     theme: str,
+    language: str
 ) -> None:
 
     print(f"Building digest from the past {hours} hours...")
@@ -64,7 +65,7 @@ def run(
     )
 
     # 1. Fetch all the posts and boosts from our home timeline that we haven't interacted with
-    posts, boosts = fetch_posts_and_boosts(hours, mst, timeline)
+    posts, boosts = fetch_posts_and_boosts(hours, mst, timeline, language)
 
     # 2. Score them, and return those that meet our threshold
     threshold_posts = threshold.posts_meeting_criteria(posts, scorer)
@@ -94,6 +95,7 @@ def run(
                 "timeline_name": timeline,
                 "threshold": threshold.get_name(),
                 "scorer": scorer.get_name(),
+                "language": language,
             },
             output_dir=output_dir,
             theme=theme,
@@ -107,6 +109,7 @@ if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser(
         prog="mastodon_digest",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        exit_on_error=True,
     )
     arg_parser.add_argument(
         "-f",  # for "feed" since t-for-timeline is taken
@@ -117,7 +120,6 @@ if __name__ == "__main__":
     )
     arg_parser.add_argument(
         "-n",
-        choices=range(1, 25),
         default=12,
         dest="hours",
         help="The number of hours to include in the Mastodon Digest",
@@ -161,6 +163,13 @@ if __name__ == "__main__":
         help="Named template theme with which to render the digest",
         required=False,
     )
+    arg_parser.add_argument(
+        "-l",
+        default="*",
+        dest="lang",
+        help="Language to filter for",
+        required=False,
+    )
     args = arg_parser.parse_args()
 
     # Attempt to validate the output directory
@@ -196,4 +205,5 @@ if __name__ == "__main__":
         timeline,
         output_dir,
         args.theme,
+        args.lang
     )
