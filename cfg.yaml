@@ -1,6 +1,0 @@
-scorer: ExtendedSimpleWeighted
-hours: 25
-amplify_accounts:
-  user1@host1: 0.0
-  user2@host2: 10.0
-  user3@host3: 100.0

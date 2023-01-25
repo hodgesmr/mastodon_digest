@@ -82,15 +82,15 @@ options:
   -h, --help            show this help message and exit
   -n {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24}
                         The number of hours to include in the Mastodon Digest (default: 12)
-  -s {Configured,ExtendedSimple,ExtendedSimpleWeighted,Simple,SimpleWeighted}
+  -s {ExtendedSimple,ExtendedSimpleWeighted,Simple,SimpleWeighted}
                         Which post scoring criteria to use. Simple scorers take a geometric
                         mean of boosts and favs. Extended scorers include reply counts in
                         the geometric mean. Weighted scorers multiply the score by an
                         inverse square root of the author's followers, to reduce the
                         influence of large accounts. (default: SimpleWeighted)
-  -c SCORER_CONFIG, --scorer-config SCORER_CONFIG
+  -c, --scorer-config CONFIG_FILE
                         Defines the configuration file for a user configured
-                        scorer. (default: ./scorer_cfg.yaml)
+                        scorer. (default: ./cfg.yaml)
   -t {lax,normal,strict}
                         Which post threshold criteria to use. lax = 90th percentile, normal
                         = 95th percentile, strict = 98th percentile (default: normal)
@@ -110,9 +110,7 @@ make run FLAGS="-n 8 -s Simple -t lax"
    - `SimpleWeighted` : The same as `Simple`, but every score is multiplied by the inverse of the square root of the author's follower count. Therefore, authors with very large audiences will need to meet higher boost and favorite numbers. **This is the default scorer**.
    - `ExtendedSimple` : Each post is scored with a modified [geometric mean](https://en.wikipedia.org/wiki/Geometric_mean) of its number of boosts, its number of favorites, and its number of replies.
    - `ExtendedSimpleWeighted` : The same as `ExtendedSimple`, but every score is multiplied by the inverse of the square root of the author's follower count. Therefore, authors with very large audiences will need to meet higher boost, favorite, and reply numbers.
-   - `Configured` : User options given in a configuration file (see option `-c`) are taken into account for scoring, the base scoring is specified in the file via the parameter `base_scoring`, which must be one of the above.
-* `-c` : Configuration file required if the scoring method is `Configured`. Refer to default config `scorer_cfg.yaml` as template. Parameters implemented so far:
-   - `base_scoring` : basic scoring method (see option `-s`)
+* `-c` : Configuration file. Refer to `cfg.yaml.example` as template. Parameters can be one of the available per command line interface, that is: `hours` (<-`n`), `scorer` (<-`-s`), `threshold` (<-`-t`), `output_dir` (<-`-o`) (cli takes precedence). Further parameters:
    - `amplify_accounts` : Map of weight factors, by which posts of specified accounts are multiplied.
 * `-t` : Threshold for scores to include. **normal** is the default
   - `lax` : Posts must achieve a score within the 90th percentile.
