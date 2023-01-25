@@ -1,5 +1,0 @@
-base_scoring: ExtendedSimpleWeighted
-amplify_accounts:
-  honk: 0.0
-  buddy: 10.0
-  idol: 100.0

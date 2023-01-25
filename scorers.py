@@ -3,13 +3,13 @@ from __future__ import annotations
 import importlib
 import inspect
 import sys
-import yaml
 from abc import ABC, abstractmethod
 from math import sqrt
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from scipy import stats
+
+from api import get_full_account_name
 
 if TYPE_CHECKING:
     from models import ScoredPost
@@ -102,19 +102,19 @@ class ExtendedSimpleWeightedScorer(InverseFollowerWeight, ExtendedSimpleScorer):
 
 
 class ConfiguredScorer(Weight, Scorer):
-    @classmethod
-    def parse_scorer_params(cls, cfg_path : Path) -> dict:
-        with open(str(cfg_path.absolute()), "r") as f:
-            pars = yaml.safe_load(f)
-        return pars
-    
+    @staticmethod
+    def get_additional_scorer_pars() -> set:
+        # Return a set of parameter names, which modify the behaviour 
+        # of a base scorer and require the use of a configured scorer.
+        # Add new parameters here to trigger the use of the ConfiguredScorer
+        # instead of instanciating a basic scorer directly (see run.py).
+        return {"amplify_accounts",}
+     
     @classmethod
     def check_params(cls, pars):
-        if "base_scoring" not in pars:
-            sys.exit("ConfiguredScorer requires parameter 'base_scoring'")
         admissible_base_scorers = set(get_scorers()).difference({"Configured"})
-        if pars["base_scoring"] not in admissible_base_scorers:
-            sys.exit("ConfiguredScorer requires 'base_scoring' as one of %s"%admissible_base_scorers)
+        if pars["scorer"] not in admissible_base_scorers:
+            sys.exit("Configure scorer '%s' must be one of %s"%admissible_base_scorers)
 
     def score(self, scored_post: ScoredPost) -> ConfiguredScorer:
         s = self.base_scorer.score(scored_post) * self.weight(scored_post)
@@ -123,12 +123,14 @@ class ConfiguredScorer(Weight, Scorer):
     def weight(self, scored_post: ScoredPost) -> Weight:
         base_weight = self.base_scorer.weight(scored_post)
         acct = scored_post.info.get("account", {}).get("acct", "")
+        acct = get_full_account_name(acct, self.default_host)
         w = base_weight * self.amplify_accounts.get(acct, 1.0)
         return w
 
     def __init__(self, **pars)->None:
         ConfiguredScorer.check_params(pars)
-        self.base_scorer = get_scorers()[pars["base_scoring"]]
+        self.default_host = pars["default_host"]
+        self.base_scorer = get_scorers()[pars["scorer"]]
         self.amplify_accounts = pars.get("amplify_accounts", {})
 
 

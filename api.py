@@ -9,6 +9,18 @@ if TYPE_CHECKING:
     from mastodon import Mastodon
 
 
+def get_full_account_name(acct : str, default_host : str) -> str:
+    """
+    Adds the default hostname to the user name if not present
+    """
+    if acct == "":
+        return ""
+    if len(acct.split("@")) == 2:
+        return acct
+    else:
+        return "@".join((acct, default_host))
+    
+
 def fetch_posts_and_boosts(
     hours: int, mastodon_client: Mastodon, mastodon_username: str
 ) -> tuple[list[ScoredPost], list[ScoredPost]]:

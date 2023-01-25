@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import os
 import sys
+import yaml
 from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -11,12 +12,14 @@ from jinja2 import Environment, FileSystemLoader
 from mastodon import Mastodon
 
 from api import fetch_posts_and_boosts
-from scorers import get_scorers
+from scorers import get_scorers, ConfiguredScorer
 from thresholds import get_threshold_from_name, get_thresholds
+from urllib3.util.url import parse_url
 
 if TYPE_CHECKING:
     from scorers import Scorer
     from thresholds import Threshold
+    from argparse import Namespace, ArgumentParser
 
 
 def render_digest(context: dict, output_dir: Path) -> None:
@@ -25,11 +28,32 @@ def render_digest(context: dict, output_dir: Path) -> None:
     output_html = template.render(context)
     output_file_path = output_dir / 'index.html'
     output_file_path.write_text(output_html)
-
+    
 
 def format_base_url(mastodon_base_url: str) -> str:
     return mastodon_base_url.strip().rstrip("/")
 
+
+def check_config_pars(pars):
+    for acct_list in ["amplify_accounts"]:
+        for acct in pars.get(acct_list, []):
+            if len(acct.split("@")) != 2:
+                sys.exit("Please provide accounts in the form '@user@host' (check failed for '%s' in list '%s')"%(acct, acct_list)) 
+
+
+def add_defaults_from_config(arg_parser : ArgumentParser, config_file : Path) -> None:
+    # Override defaults of parser by pars given in config file
+    if config_file.exists() and config_file.is_file():
+        with open(config_file, "r") as f:
+            cfg_pars = yaml.safe_load(f)
+        print("Loading config file '%s'"%config_file)
+        check_config_pars(cfg_pars)
+        arg_parser.set_defaults(**cfg_pars)
+
+    else:
+        if str(config_file) != arg_parser.get_default("config"):
+            print("Couldn't load config file '%s'."%config_file)
+                
 
 def run(
     hours: int,
@@ -99,10 +123,10 @@ if __name__ == "__main__":
         """,
     )
     arg_parser.add_argument(
-        "-c", "--scorer-config",
-        default="./scorer_cfg.yaml",
-        dest="scorer_config",
-        help="Defines the configuration file for a user configured scorer.",
+        "-c", "--config",
+        default="./cfg.yaml",
+        dest="config",
+        help="Defines a configuration file.",
         required=False,
     )
     arg_parser.add_argument(
@@ -123,18 +147,10 @@ if __name__ == "__main__":
         help="Output directory for the rendered digest",
         required=False,
     )
+    add_defaults_from_config(arg_parser, Path(arg_parser.parse_args().config))
+    # Parse args once more with updated defaults
     args = arg_parser.parse_args()
     
-    if args.scorer == "Configured":
-        scorer_config = Path(args.scorer_config)
-        if not scorer_config.exists() or not scorer_config.is_file():
-            sys.exit(f"Scorer config file not found: {args.scorer_config}")
-        scorer_params = scorers[args.scorer].parse_scorer_params(scorer_config)
-    else:
-        if args.scorer_config is not None:
-            print("Please note: The argument '--scorer-config' is only effective for scoring method 'Configured'")
-        scorer_params = {}
-
     output_dir = Path(args.output_dir)
     if not output_dir.exists() or not output_dir.is_dir():
         sys.exit(f"Output directory not found: {args.output_dir}")
@@ -153,9 +169,21 @@ if __name__ == "__main__":
     if not mastodon_username:
         sys.exit("Missing environment variable: MASTODON_USERNAME")
 
+    # Check if a ConfiguredScorer should be used 
+    # NOTE: depends on whether the parameters in the config file require this, currently,
+    #       but may be changed to always use a ConfiguredScorer as a wrapper)
+    if set(vars(args)).intersection(ConfiguredScorer.get_additional_scorer_pars()):
+        # At least one parameter was passed, which requires 
+        # the use of a ConfiguredScorer to modify scores of the base scorer
+        scorer = ConfiguredScorer(base_scorer=args.scorer, 
+                                  default_host=parse_url(mastodon_base_url).hostname, 
+                                  **vars(args))
+    else:
+        scorer = scorers[args.scorer]()
+        
     run(
         args.hours,
-        scorers[args.scorer](**scorer_params),
+        scorer,
         get_threshold_from_name(args.threshold),
         mastodon_token,
         format_base_url(mastodon_base_url),
