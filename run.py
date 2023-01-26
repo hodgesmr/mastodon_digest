@@ -52,7 +52,7 @@ def check_config_pars(pars):
     for acct_list in ["amplify_accounts"]:
         for acct in pars.get(acct_list, []):
             if len(acct.split("@")) != 2:
-                sys.exit("Please provide accounts in the form '@user@host' (check failed for '%s' in list '%s')"%(acct, acct_list)) 
+                sys.exit("Please provide accounts in the form 'user@host' (check failed for '%s' in list '%s')"%(acct, acct_list)) 
 
 
 def add_defaults_from_config(arg_parser : ArgumentParser, config_file : Path) -> None:

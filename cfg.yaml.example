@@ -1,3 +1,5 @@
+# corresponds to command line argument '-f'
+timeline: "home"
 # corresponds to command line argument '-s'
 scorer: "ExtendedSimpleWeighted"
 # corresponds to command line argument '-n'
@@ -6,9 +8,11 @@ hours: 12
 threshold: "normal"
 # corresponds to command line argument '-o'
 output_dir: "./render/"
+# corresponds to command line argument '--theme'
+theme: "default"
 
 # Define weight factors for posts by specific accounts
 amplify_accounts:
-  @user1@host1: 0.0
-  @user2@host2: 10.0
-  @user3@host3: 100.0
+  user1@host1: 0.0
+  user2@host2: 10.0
+  user3@host3: 100.0
