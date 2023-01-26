@@ -23,14 +23,20 @@ if TYPE_CHECKING:
     from argparse import Namespace, ArgumentParser
 
 
-def render_digest(context: dict, output_dir: Path, theme: str = "default") -> None:
+def render_digest(context: dict, output_path: Path, theme: str = "default") -> None:
     environment = Environment(
         loader=FileSystemLoader([f"templates/themes/{theme}", "templates/common"])
     )
     template = environment.get_template("index.html.jinja")
     output_html = template.render(context)
-    output_file_path = output_dir / "index.html"
-    output_file_path.write_text(output_html)
+    
+    if output_path.is_dir():
+        dt = datetime.strptime(context["rendered_at"], "%B %d, %Y at %H:%M:%S UTC")
+        dt_str = dt.strftime("%Y-%m-%d, %Hh%Mm%Ss")
+        fn = "index({scorer}, {dt_str}, {hours}h).html".format(dt_str=dt_str, **dict(**context))
+        output_path = output_path/ fn
+    output_path.write_text(output_html)
+    print("Wrote digest to '%s'"%output_path)
 
 
 def list_themes() -> list[str]:
@@ -42,6 +48,25 @@ def list_themes() -> list[str]:
             os.listdir("templates/themes"),
         )
     )
+
+
+def validate_output_path(output_path : str) -> Path:
+    # Check if output path is either an existing directory,
+    # or a non-existing file
+    output_path = Path(output_path)
+    if not output_path.exists():
+        # This should be a filename, ensure that its parent directory exists
+        output_dir = output_path.parent
+        if not output_dir.is_dir():
+            sys.exit(f"Output directory not found: {output_dir}")
+        # Ensure that the filename has html extension
+        if str(output_path).split(".")[-1] not in {"htm", "html"}:
+            sys.exit(f"Output file name must have extension 'html' (given path: {output_path})")
+    else:
+        # This should be a directory
+        if not output_path.is_dir():
+            sys.exit(f"Output file already exists: {output_path}")    
+    return output_path
 
 
 def format_base_url(mastodon_base_url: str) -> str:
@@ -76,7 +101,7 @@ def run(
     mastodon_token: str,
     mastodon_base_url: str,
     timeline: str,
-    output_dir: Path,
+    output_path: Path,
     theme: str,
 ) -> None:
 
@@ -119,7 +144,7 @@ def run(
                 "threshold": threshold.get_name(),
                 "scorer": scorer.get_name(),
             },
-            output_dir=output_dir,
+            output_path=output_path,
             theme=theme,
         )
 
@@ -180,8 +205,8 @@ if __name__ == "__main__":
     arg_parser.add_argument(
         "-o",
         default="./render/",
-        dest="output_dir",
-        help="Output directory for the rendered digest",
+        dest="output_path",
+        help="Output file or directory for the rendered digest (default: ./render/, which creates an file 'index(<RUN INFO>).html' in the directory 'render')",
         required=False,
     )
     arg_parser.add_argument(
@@ -195,11 +220,7 @@ if __name__ == "__main__":
     add_defaults_from_config(arg_parser, Path(arg_parser.parse_args().config))
     # Parse args once more with updated defaults
     args = arg_parser.parse_args()
-
-    # Attempt to validate the output directory
-    output_dir = Path(args.output_dir)
-    if not output_dir.exists() or not output_dir.is_dir():
-        sys.exit(f"Output directory not found: {args.output_dir}")
+    output_path = validate_output_path(args.output_path)
 
     # Loosely validate the timeline argument, so that if a completely unexpected string is entered,
     # we explicitly reset to 'Home', which makes the rendered output cleaner.
@@ -240,6 +261,6 @@ if __name__ == "__main__":
         mastodon_token,
         format_base_url(mastodon_base_url),
         timeline,
-        output_dir,
+        output_path,
         args.theme,
     )

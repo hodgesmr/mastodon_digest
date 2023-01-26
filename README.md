@@ -71,7 +71,7 @@ Then generate a Mastodon Digest with:
 python run.py
 ```
 
-Through either method, the digest is written to `render/index.html` by default. You can then view it with the browser of your choice.
+Through either method, the digest is written to `render/index(<RUN INFO>).html` by default. You can then view it with the browser of your choice.
 
 
 ## Command arguments
@@ -85,7 +85,7 @@ python run.py -h
 ```
 usage: mastodon_digest [-h] [-f TIMELINE] [-n {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24}]
                        [-s {ExtendedSimple,ExtendedSimpleWeighted,Simple,SimpleWeighted}] [-t {lax,normal,strict}]
-                       [-o OUTPUT_DIR] [--theme {light,default}]
+                       [-o OUTPUT_PATH] [--theme {light,default}]
 
 options:
   -h, --help            show this help message and exit
@@ -104,7 +104,7 @@ options:
   -t {lax,normal,strict}
                         Which post threshold criteria to use. lax = 90th percentile, normal = 95th percentile, strict = 98th
                         percentile (default: normal)
-  -o OUTPUT_DIR         Output directory for the rendered digest (default: ./render/)
+  -o OUTPUT_PATH        Output file or directory for the rendered digest (default: ./render/, which creates an file 'index(<RUN INFO>).html' in the directory 'render')
   --theme {light,default}
                         Named template theme with which to render the digest (default: default)
 ```
