@@ -110,7 +110,7 @@ make run FLAGS="-n 8 -s Simple -t lax"
    - `SimpleWeighted` : The same as `Simple`, but every score is multiplied by the inverse of the square root of the author's follower count. Therefore, authors with very large audiences will need to meet higher boost and favorite numbers. **This is the default scorer**.
    - `ExtendedSimple` : Each post is scored with a modified [geometric mean](https://en.wikipedia.org/wiki/Geometric_mean) of its number of boosts, its number of favorites, and its number of replies.
    - `ExtendedSimpleWeighted` : The same as `ExtendedSimple`, but every score is multiplied by the inverse of the square root of the author's follower count. Therefore, authors with very large audiences will need to meet higher boost, favorite, and reply numbers.
-* `-c` : Configuration file. Refer to `cfg.yaml.example` as template. Parameters can be one of the available per command line interface, that is: `hours` (<-`n`), `scorer` (<-`-s`), `threshold` (<-`-t`), `output_dir` (<-`-o`) (cli takes precedence). Further parameters:
+* `-c` : Configuration file. Refer to `cfg.yaml.example` as template. Parameters can be one of the available per command line interface, that is: `hours` (<-`n`), `timeline` (<-`f`) `scorer` (<-`-s`), `threshold` (<-`-t`), `output_dir` (<-`-o`), `theme` (cli takes precedence). Further parameters:
    - `amplify_accounts` : Map of weight factors, by which posts of specified accounts are multiplied.
 * `-t` : Threshold for scores to include. **normal** is the default
   - `lax` : Posts must achieve a score within the 90th percentile.
