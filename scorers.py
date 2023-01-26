@@ -120,6 +120,10 @@ class ConfiguredScorer(Weight, Scorer):
         if pars["scorer"] not in admissible_base_scorers:
             sys.exit("Configure scorer '%s' must be one of %s"%admissible_base_scorers)
 
+    # Override class by instance method (I don't know how to solve this better.)
+    def get_name(self):
+        return "Configured%s"%(self.base_scorer.get_name())
+
     def score(self, scored_post: ScoredPost) -> ConfiguredScorer:
         s = self.base_scorer.score(scored_post) * self.weight(scored_post)
         return s
@@ -141,4 +145,4 @@ class ConfiguredScorer(Weight, Scorer):
 def get_scorers():
     all_classes = inspect.getmembers(importlib.import_module(__name__), inspect.isclass)
     scorers = [c for c in all_classes if c[1] != Scorer and issubclass(c[1], Scorer)]
-    return {scorer[1].get_name(): scorer[1] for scorer in scorers}
+    return {scorer[1].get_name(): scorer[1] for scorer in scorers if scorer[1] is not ConfiguredScorer}
