@@ -1,0 +1,3 @@
+[submodule "flipton"]
+	path = flipton
+	url = https://github.com/kokodokodo/flipton
