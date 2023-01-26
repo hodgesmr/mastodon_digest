@@ -59,7 +59,7 @@ make local FLAGS="-n 8 -s ExtendedSimpleWeighted -t lax"
 
 #### Manually
 
-Althernatively if you have a different Python 3.9 environment, you can:
+Alternatively if you have a different Python 3.9 environment, you can:
 
 ```sh
 pip install -r requirements.txt
@@ -107,6 +107,7 @@ options:
   -o OUTPUT_PATH        Output file or directory for the rendered digest (default: ./render/, which creates an file 'index(<RUN INFO>).html' in the directory 'render')
   --theme {light,default}
                         Named template theme with which to render the digest (default: default)
+  --flipton             Use flipton for retrieving posts from their original instances. This will fetch more complete information about boosts, stars and replies.
 ```
 
 If you are running with Docker and make, you can pass flags as:
@@ -167,6 +168,12 @@ When developing themes, you can run the digest in development mode, which uses t
 ```sh
 make dev FLAGS="--theme my-theme"
 ```
+
+#### flipton
+
+When you intend to use flipton for Mastodon requests, be sure to fetch the corresponding submodule, e.g., by cloning the repo with option `--recurse-submodules`. 
+When `run.py` is started with `--flipton`, the script attempts to retrieve posts and boosts from the home instance of the author. This also fetches boosts, stars 
+and replies for the post, which the user's home instance (as given by `MASTODON_BASE_URL`) is not aware of.
 
 ## What's missing?
 
