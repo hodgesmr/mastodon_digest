@@ -1,4 +1,4 @@
-.PHONY: run help
+.PHONY: run help local dev
 
 VERSION := $(shell git describe --abbrev=0 --tags)
 BUILD_DATE := "$(shell date -u)"
@@ -7,6 +7,13 @@ NAME := $(shell pwd | xargs basename)
 VENDOR := "Matt Hodges"
 ORG := hodgesmr
 WORKDIR := "/opt/${NAME}"
+
+# For running locally. We default to a general python3 but depending on the
+# users environment they may need to specify which version to use. python3.9
+# is the lowest tested with.
+SYSTEM_PYTHON ?= python3
+VENV_DIR := .venv
+PYTHON_BIN := $(VENV_DIR)/bin/python
 
 DOCKER_SCAN_SUGGEST=false
 
@@ -43,3 +50,16 @@ help:
 run:
 	docker run --env-file .env -it --rm -v "$(PWD)/render:${WORKDIR}/render" ${ORG}/${NAME} ${FLAGS}
 	python -m webbrowser -t "file://$(PWD)/render/index.html"
+
+.EXPORT_ALL_VARIABLES:
+dev:
+	@echo "Running with local development themes"
+	docker run --env-file .env -it --rm -v "$(PWD)/render:${WORKDIR}/render" -v "$(PWD)/templates:${WORKDIR}/templates" ${ORG}/${NAME} ${FLAGS}
+	python -m webbrowser -t "file://$(PWD)/render/index.html"
+
+$(PYTHON_BIN):
+	$(SYSTEM_PYTHON) -m venv $(VENV_DIR)
+	$(PYTHON_BIN) -m pip install -r requirements.txt
+
+local: $(PYTHON_BIN)
+	$(PYTHON_BIN) run.py ${FLAGS}
