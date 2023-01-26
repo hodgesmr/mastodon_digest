@@ -10,6 +10,11 @@
         max-width: 640px;
         padding: 10px;
         text-align: center;
+        margin: 0 auto;
+    }
+
+    .posts {
+        align: center;
     }
 
     div.post {
@@ -36,32 +41,19 @@
         color: white;
     }
 
-    span#render-description {
+    .render-info {
         color: #D3D3D3;
+        max-width: 640px;
     }
 
-    span#scorer {
-        color: #D3D3D3;
+    .render-info summary {
+        cursor: pointer;
+        margin-bottom: 10px
     }
 
-    span#scorer-value {
+    .render-info-value {
         font-weight: bold;
-    }
-
-    span#threshold {
-        color: #D3D3D3;
-    }
-
-    span#threshold-value {
-        font-weight: bold;
-    }
-
-    span#rendered-value {
-        font-weight: bold;
-    }
-
-    span#hours-value {
-        font-weight: bold;
+        margin-right: 5px;
     }
 
     iframe.mastodon-embed {

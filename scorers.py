@@ -31,8 +31,8 @@ class UniformWeight(Weight):
 class InverseFollowerWeight(Weight):
     @classmethod
     def weight(cls, scored_post: ScoredPost) -> InverseFollowerWeight:
-        # Zero out posts by accounts with zero followers that somehow made it to my feed
-        if scored_post.info["account"]["followers_count"] == 0:
+        # Zero out posts by accounts with zero followers (it happens), or less (count is -1 when the followers count is hidden)
+        if scored_post.info["account"]["followers_count"] <= 0:
             weight = 0
         else:
             # inversely weight against how big the account is
@@ -61,8 +61,8 @@ class SimpleScorer(UniformWeight, Scorer):
             # Inflate every value by 1
             metric_average = stats.gmean(
                 [
-                    scored_post.info["reblogs_count"]+1,
-                    scored_post.info["favourites_count"]+1,
+                    scored_post.info["reblogs_count"] + 1,
+                    scored_post.info["favourites_count"] + 1,
                 ]
             )
         else:
@@ -79,15 +79,19 @@ class SimpleWeightedScorer(InverseFollowerWeight, SimpleScorer):
 class ExtendedSimpleScorer(UniformWeight, Scorer):
     @classmethod
     def score(cls, scored_post: ScoredPost) -> ExtendedSimpleScorer:
-        if scored_post.info["reblogs_count"] or scored_post.info["favourites_count"] or scored_post.info["replies_count"]:
+        if (
+            scored_post.info["reblogs_count"]
+            or scored_post.info["favourites_count"]
+            or scored_post.info["replies_count"]
+        ):
             # If there's at least one metric
             # We don't want zeros in other metrics to multiply that out
             # Inflate every value by 1
             metric_average = stats.gmean(
                 [
-                    scored_post.info["reblogs_count"]+1,
-                    scored_post.info["favourites_count"]+1,
-                    scored_post.info["replies_count"]+1,
+                    scored_post.info["reblogs_count"] + 1,
+                    scored_post.info["favourites_count"] + 1,
+                    scored_post.info["replies_count"] + 1,
                 ],
             )
         else:

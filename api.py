@@ -22,7 +22,7 @@ def get_full_account_name(acct : str, default_host : str) -> str:
     
 
 def fetch_posts_and_boosts(
-    hours: int, mastodon_client: Mastodon, mastodon_username: str
+    hours: int, mastodon_client: Mastodon, timeline: str
 ) -> tuple[list[ScoredPost], list[ScoredPost]]:
     """Fetches posts from the home timeline that the account hasn't interacted with"""
 
@@ -39,8 +39,32 @@ def fetch_posts_and_boosts(
     seen_post_urls = set()
     total_posts_seen = 0
 
-    # Iterate over our home timeline until we run out of posts or we hit the limit
-    response = mastodon_client.timeline(min_id=start)
+    # If timeline name is specified as hashtag:tagName or list:list-name, look-up with those names,
+    # else accept 'federated' and 'local' to process from the server public and local timelines.
+    #
+    # We default to 'home' if the name is unrecognized
+    if ":" in timeline:
+        timelineType, timelineId = timeline.lower().split(":", 1)
+    else:
+        timelineType = timeline.lower()
+
+    if timelineType == "hashtag":
+        response = mastodon_client.timeline_hashtag(timelineId, min_id=start)
+    elif timelineType == "list":
+        if not timelineId.isnumeric():
+            raise TypeError('Cannot load list timeline: ID must be numeric, e.g.: https://example.social/lists/4 would be list:4')
+
+        response = mastodon_client.timeline_list(timelineId, min_id=start)
+    elif timelineType == "federated":
+        response = mastodon_client.timeline_public(min_id=start)
+    elif timelineType == "local":
+        response = mastodon_client.timeline_local(min_id=start)
+    else:
+        response = mastodon_client.timeline(min_id=start)
+
+    mastodon_acct = mastodon_client.me()['acct'].strip().lower()
+
+    # Iterate over our timeline until we run out of posts or we hit the limit
     while response and total_posts_seen < TIMELINE_LIMIT:
 
         # Apply our server-side filters
@@ -62,11 +86,14 @@ def fetch_posts_and_boosts(
             if scored_post.url not in seen_post_urls:
                 # Apply our local filters
                 # Basically ignore my posts or posts I've interacted with
+                # and ignore posts from accounts that have "#noindex" or "#nobot"
                 if (
                     not scored_post.info["reblogged"]
                     and not scored_post.info["favourited"]
                     and not scored_post.info["bookmarked"]
-                    and scored_post.info["account"]["acct"].strip().lower() != mastodon_username.strip().lower()
+                    and scored_post.info["account"]["acct"].strip().lower() != mastodon_acct
+                    and "#noindex" not in scored_post.info["account"]["note"].lower()
+                    and "#nobot" not in scored_post.info["account"]["note"].lower()
                 ):
                     # Append to either the boosts list or the posts lists
                     if boost:
