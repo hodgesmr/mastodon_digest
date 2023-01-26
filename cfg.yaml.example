@@ -7,7 +7,7 @@ hours: 12
 # corresponds to command line argument '-t'
 threshold: "normal"
 # corresponds to command line argument '-o'
-output_dir: "./render/"
+output_path: "./render/"
 # corresponds to command line argument '--theme'
 theme: "default"
 
