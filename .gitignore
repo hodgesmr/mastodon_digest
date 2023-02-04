@@ -45,3 +45,5 @@ package-lock.json
 
 render/*.html
 .venv
+
+cfg.yaml

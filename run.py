@@ -23,14 +23,21 @@ if TYPE_CHECKING:
     from argparse import Namespace, ArgumentParser
 
 
-def render_digest(context: dict, output_dir: Path, theme: str = "default") -> None:
-    environment = Environment(
-        loader=FileSystemLoader([f"templates/themes/{theme}", "templates/common"])
-    )
-    template = environment.get_template("index.html.jinja")
-    output_html = template.render(context)
-    output_file_path = output_dir / "index.html"
-    output_file_path.write_text(output_html)
+def render_digest(context: dict, output_dir: Path, output_type: str = "html",  theme: str = "default") -> None:
+    if (output_type=="html"):
+        environment = Environment(
+            loader=FileSystemLoader([f"templates/themes/{theme}", "templates/common"])
+        )
+        template = environment.get_template("index.html.jinja")
+        output_html = template.render(context)
+        output_file_path = output_dir / "index.html"
+        output_file_path.write_text(output_html)
+    elif (output_type=="bot"):
+        print("Would boost the following...")
+        print(context)
+        for post in context['posts']:
+            print (post.url)
+
 
 
 def list_themes() -> list[str]:
@@ -77,6 +84,7 @@ def run(
     mastodon_base_url: str,
     timeline: str,
     output_dir: Path,
+    output_type: str,
     theme: str,
 ) -> None:
 
@@ -120,6 +128,7 @@ def run(
                 "scorer": scorer.get_name(),
             },
             output_dir=output_dir,
+            output_type=output_type,
             theme=theme,
         )
 
@@ -192,6 +201,14 @@ if __name__ == "__main__":
         help="Named template theme with which to render the digest",
         required=False,
     )
+    arg_parser.add_argument(
+        "--output",
+        choices=["html", "bot"],
+        default="html",
+        dest="output_type",
+        help="Whether to produce an \"html\" digest (default) or boost items to a timeline (\"bot\")",
+        required=False,
+    )
     add_defaults_from_config(arg_parser, Path(arg_parser.parse_args().config))
     # Parse args once more with updated defaults
     args = arg_parser.parse_args()
@@ -241,5 +258,6 @@ if __name__ == "__main__":
         format_base_url(mastodon_base_url),
         timeline,
         output_dir,
+        args.output_type,
         args.theme,
     )
