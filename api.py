@@ -107,3 +107,12 @@ def fetch_posts_and_boosts(
         )  # fetch the previous (because of reverse chron) page of results
 
     return posts, boosts
+
+def reboost_toots(mastodon_client: Mastodon, context: dict) -> None:
+    """Boosts toots provided in the context"""
+    # This could eventually also issue a summary toot
+    for scored_post in context['posts']:
+        print (f"url: {scored_post.url}")
+        status = mastodon_client.status(scored_post.info['id'])
+        #print (status.content)
+        print (f"Would call mastodon_client.reblog({scored_post.info['id']}, visibility='unlisted')")

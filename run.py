@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING
 from jinja2 import Environment, FileSystemLoader
 from mastodon import Mastodon
 
-from api import fetch_posts_and_boosts
+from api import fetch_posts_and_boosts, reboost_toots
 from scorers import get_scorers, ConfiguredScorer
 from thresholds import get_threshold_from_name, get_thresholds
 
@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from argparse import Namespace, ArgumentParser
 
 
-def render_digest(context: dict, output_dir: Path, output_type: str = "html",  theme: str = "default") -> None:
+def render_digest(context: dict, output_dir: Path,  mastodon_client: Mastodon, output_type: str = "html", theme: str = "default") -> None:
     if (output_type=="html"):
         environment = Environment(
             loader=FileSystemLoader([f"templates/themes/{theme}", "templates/common"])
@@ -33,10 +33,9 @@ def render_digest(context: dict, output_dir: Path, output_type: str = "html",  t
         output_file_path = output_dir / "index.html"
         output_file_path.write_text(output_html)
     elif (output_type=="bot"):
-        print("Would boost the following...")
-        print(context)
-        for post in context['posts']:
-            print (post.url)
+        # print("Would boost the following...")
+        # print(context)
+        reboost_toots(mastodon_client, context)
 
 
 
@@ -128,6 +127,7 @@ def run(
                 "scorer": scorer.get_name(),
             },
             output_dir=output_dir,
+            mastodon_client=mst,
             output_type=output_type,
             theme=theme,
         )
