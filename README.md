@@ -168,6 +168,25 @@ When developing themes, you can run the digest in development mode, which uses t
 make dev FLAGS="--theme my-theme"
 ```
 
+## Proposed workflow for "Bot" mode
+
+This code can also be used to run a digest bot. When attached to an account (which should be identified as being a bot in its profile, and running on an instance where such bot accounts are permitted), it can be used to share the digest which it would prepare as an HTML page by boosting all the toots it would include in the HTML page.
+
+This gives a simple way of crafting a digest bot. First, create a dedicated account for your bot, and tailor its follows - both accounts and hashtags. Once you are content with what is appearing in the bot's timeline, try running the bot code in digest mode to adjust the digest settings.
+
+It is recommended that you run this manually.
+
+1. Run the bot once in normal html mode (`--output=html`) and review the output (usually in `render/index.html`).
+2. If you are comfortable with boosting everything which appears in the digest you've created, run the bot again, this time with `--output=bot`.
+
+If you see something in the HTML digest which you would prefer not to boost, bookmark it before running the code in bot mode. Bookmarking a toot tells the code that you have interacted with it. When making a digest, the code doesn't want to show you something you've already interacted with (favorited, boosted, or bookmarked). Favoriting and boosting toots are public (and may be what you want to avoid); bookmarking is not public but still tells the code to avoid that toot.
+
+Running the code in bot mode, it will print out the urls of the toots it will boost, but it will not ask for any confirmation of your wish to boost them. (This is why running it in digest mode and checking the output first is recommended.)
+
+This code is being used for the [ICYMI (ADN)](https://botsin.space/@icymi_adn) bot.
+
+Adjust the number of hours to match how frequently you will run the bot, but it can be longer than the interval between runs. This lets the bot look a bit further back and recognise older toots which are getting traction. Because it will not boost something it has already boosted, there shouldn't be duplication (but it doesn't currently screen for toots which link to the same external url).
+
 ## What's missing?
 
 Probably many things!

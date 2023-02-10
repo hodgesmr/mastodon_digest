@@ -10,6 +10,9 @@ threshold: "normal"
 output_dir: "./render/"
 # corresponds to command line argument '--theme'
 theme: "default"
+# output format ("html" or "bot" amplification)
+# corresponds to command line argument '--output'
+output_type: "html"
 
 # Define weight factors for posts by specific accounts
 amplify_accounts:
