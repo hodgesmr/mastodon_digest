@@ -1,17 +1,26 @@
 # corresponds to command line argument '-f'
+# Expects 'home', 'local' or 'federated', or 'list:id', 'hashtag:tag'
+# default: home
 timeline: "home"
 # corresponds to command line argument '-s'
+# Expects ExtendedSimple, ExtendedSimpleWeighted, Simple, SimpleWeighted
 scorer: "ExtendedSimpleWeighted"
 # corresponds to command line argument '-n'
+# From the command line only values up to 24 are possible, but
+# in the config file any whole number value should work.
+# Default is 12
 hours: 12
 # corresponds to command line argument '-t'
+# Expects lax, normal, strict
 threshold: "normal"
 # corresponds to command line argument '-o'
+# Default: "./render/"
 output_dir: "./render/"
 # corresponds to command line argument '--theme'
 theme: "default"
-# output format ("html" or "bot" amplification)
+# output format 
 # corresponds to command line argument '--output'
+# Generate an HTML digest ("html") or run as a bot amplifying toots ("bot")
 output_type: "html"
 
 # Define weight factors for posts by specific accounts
