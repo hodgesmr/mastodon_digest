@@ -90,6 +90,7 @@ def run(
     print(f"Building digest from the past {hours} hours...")
 
     mst = Mastodon(
+        user_agent="mastodon_digest_bot",
         access_token=mastodon_token,
         api_base_url=mastodon_base_url,
     )
