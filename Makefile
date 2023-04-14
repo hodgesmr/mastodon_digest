@@ -6,7 +6,7 @@ VCS_REF := $(shell git log -1 --pretty=%h)
 NAME := $(shell pwd | xargs basename)
 VENDOR := "Matt Hodges"
 ORG := hodgesmr
-WORKDIR := "/opt/${NAME}"
+WORKDIR := /opt/${NAME}
 
 # For running locally. We default to a general python3 but depending on the
 # users environment they may need to specify which version to use. python3.9
@@ -20,6 +20,7 @@ DOCKER_SCAN_SUGGEST=false
 FLAGS ?=
 
 print:
+	@echo PWD=$(PWD)
 	@echo BUILD_DATE=${BUILD_DATE}
 	@echo NAME=${NAME}
 	@echo ORG=${ORG}
