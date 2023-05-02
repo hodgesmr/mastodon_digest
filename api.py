@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
+from urllib3.util.url import parse_url
 from typing import TYPE_CHECKING
 
 from models import ScoredPost
@@ -8,9 +9,80 @@ from models import ScoredPost
 if TYPE_CHECKING:
     from mastodon import Mastodon
 
+# Toggle debugging output
+VERB = False
+
+def get_full_account_name(acct : str, default_host : str) -> str:
+    """
+    Adds the default hostname to the user name if not present
+    """
+    if acct == "":
+        return ""
+    if len(acct.split("@")) == 2:
+        return acct
+    else:
+        return "@".join((acct, default_host))
+    
+            
+def getOriginalPost(post):
+    """
+    Uses flipton to fetch post information from the home instance of a single post
+    """
+    from flipton.flipton import MastodonInstanceSwitcher, FliptonError
+    post_id = post.url.split("/")[-1]
+    if not post_id.isdecimal():
+        return None
+    home_instance = parse_url(post.url).hostname
+    mst = MastodonInstanceSwitcher()
+    try:
+        original_post = mst.status(host=home_instance, id=post_id)
+    except FliptonError:
+        original_post = None
+    return original_post
+
+
+def update_posts_with_flipton(posts, boosts, timeout_secs = 30):
+    """ 
+    Fetch in parallel the original posts corresponding the given posts 
+    and boosts, which were obtained from the user's home instance.
+    """
+    import time
+    from multiprocessing import Pool, cpu_count
+    if VERB:
+        print("Retrieving original posts for %d items. (Timeout after %d seconds.)"%(len(posts)+len(boosts), timeout_secs))
+    p = Pool(processes=min(10, cpu_count()))
+    res = [p.apply_async(getOriginalPost, args=(post,)) for post in posts+boosts]
+    t0 = datetime.now()
+    busy = True
+    while (datetime.now()-t0).seconds < timeout_secs and busy:
+        busy = False
+        for r in res:
+            if not r.ready():
+                busy = True
+                break
+        if busy:
+            time.sleep(1)
+    nSuccess = 0
+    for i, r in enumerate(res):
+        if not r.ready() or not r.successful():
+            continue
+        original_post = r.get()
+        if original_post is None:
+            continue
+        original_post = ScoredPost(original_post)
+        nSuccess+=1
+        if i < len(posts):
+            posts[i] = original_post
+        else:
+            boosts[i-len(posts)] = original_post
+    if VERB:
+        print("Successfully retrieved: %d/%d (timed out: %s)"%(nSuccess, len(posts)+len(boosts), busy))
+    p.terminate()
+    p.join()
+
 
 def fetch_posts_and_boosts(
-    hours: int, mastodon_client: Mastodon, timeline: str
+    hours: int, mastodon_client: Mastodon, timeline: str, use_flipton: bool
 ) -> tuple[list[ScoredPost], list[ScoredPost]]:
     """Fetches posts from the home timeline that the account hasn't interacted with"""
 
@@ -93,5 +165,8 @@ def fetch_posts_and_boosts(
         response = mastodon_client.fetch_previous(
             response
         )  # fetch the previous (because of reverse chron) page of results
+
+    if use_flipton:
+        update_posts_with_flipton(posts, boosts)
 
     return posts, boosts
