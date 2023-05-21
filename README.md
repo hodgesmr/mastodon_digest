@@ -1,5 +1,7 @@
 # Mastodon Digest
 
+**Update, 2023-05-21**: Mastodon Digest is currently in maintenance-only mode. I do not have the capacity to continue fielding feature requests or PRs that fundamentally alter the way the tool work. If you have an idea for a new feature, forks are encouraged. I will continue to push updates for bug or security fixes. If you're looking for options that are more actively maintained, I suggest: [Fediview](https://fediview.com/) or [this fork](https://github.com/mauforonda/mastodon_digest). I'm heartened by how much positive attention this got among many Mastodon communities. For me this was always a toy. I'm glad I could push some open source code that gave people room to experiment.
+
 This is a Python project that generates a digest of popular Mastodon posts from your home timeline. The digest is generated locally. The digests present two lists: posts from users you follow, and boosts from your followers. Each list is constructed by respecting your server-side content filters and identifying content that you haven't yet interacted with. Digests are automatically opened locally in your web browser. You can adjust the digest algorithm to suit your liking (see [Command arguments](#command-arguments)). The digest will not contain posts from users who include `#nobot` or `#noindex` in their bio.
 
 ![Mastodon Digest](https://i.imgur.com/ZRE9BKc.png)
@@ -162,16 +164,6 @@ When developing themes, you can run the digest in development mode, which uses t
 ```sh
 make dev FLAGS="--theme my-theme"
 ```
-
-## What's missing?
-
-Probably many things!
-
-You likely noticed that this repository has no tests. That's because I'm still treating this as a toy and not work. But tests might be good!
-
-I'm still thinking about the best structure / process / whatever to incorporate new interesting algorithms. Maybe I'll devote time to that, maybe not.
-
-I've tested this on my Intel and M1 macOS machines. Ubuntu users say it works. I believe it'll work on other architectures and operating systems, but I haven't tried. The availability of a GUI web browser is important. [Do you know how to make it work on Windows?](https://github.com/hodgesmr/mastodon_digest/issues/13)
 
 ## A Matt Hodges project
 
